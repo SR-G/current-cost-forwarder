@@ -122,12 +122,6 @@ public class CurrentCostReader extends Thread {
                 final String name = f.getAbsolutePath();
                 LOGGER.info("Auto-detected current cost device [" + name + "]");
                 return name;
-                // if (isMirror4J(name)) {
-                // LOGGER.info("Device [" + name + "] is detected as a mir:ror, now connecting");
-                // return name;
-                // } else {
-                // LOGGER.debug("Device [" + name + "] is not a mir:ror, won't connect to it");
-                // }
             }
         }
         LOGGER.info("No auto-detect current cost device, will use default name [" + Constants.DEFAULT_DEVICE_NAME + "]");

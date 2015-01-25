@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.tensin.ccf.CCFException;
+import org.tensin.ccf.Reducer;
 import org.tensin.ccf.bean.BeanField;
 import org.tensin.ccf.events.IEvent;
 import org.tensin.ccf.forwarder.IForwarder;
@@ -38,6 +39,9 @@ public class ForwarderMQTT implements IForwarder {
     @BeanField
     private String brokerDataDir;
 
+    /** The count. */
+    private long count;
+
     /**
      * Gets the broker topic.
      *
@@ -61,11 +65,14 @@ public class ForwarderMQTT implements IForwarder {
     @Override
     public void forward(final IEvent event) throws CCFException {
         final String topicName = buildBrokerTopic(event);
-        LOGGER.info("Forwarding event " + event.toString() + " on topic [" + topicName + "]");
+        if (Reducer.render(count)) {
+            LOGGER.info("Forwarding event #" + count + " " + event.toString() + " on topic [" + topicName + "]");
+        }
         final MqttMessage message = new MqttMessage();
         message.setPayload(event.format().getBytes());
         try {
             client.publish(topicName, message);
+            count++;
         } catch (MqttPersistenceException e) {
             throw new CCFException("Can't publish message [" + message.toString() + "] on topic [" + topicName + "]", e);
         } catch (MqttException e) {
@@ -80,6 +87,15 @@ public class ForwarderMQTT implements IForwarder {
      */
     public String getBrokerDataDir() {
         return brokerDataDir;
+    }
+
+    /**
+     * Gets the count.
+     *
+     * @return the count
+     */
+    public long getCount() {
+        return count;
     }
 
     /**
@@ -109,7 +125,7 @@ public class ForwarderMQTT implements IForwarder {
                 final String hiddenPassword = StringUtils.repeat("*", getMqttBrokerDefinition().getBrokerPassword() == null ? 0 : getMqttBrokerDefinition()
                         .getBrokerPassword().length());
                 sb.append(", connection will be authentificated with username [").append(getMqttBrokerDefinition().getBrokerUsername()).append("], password [")
-                        .append(hiddenPassword).append("]");
+                .append(hiddenPassword).append("]");
                 options.setUserName(getMqttBrokerDefinition().getBrokerUsername());
                 options.setPassword(getMqttBrokerDefinition().getBrokerPassword().toCharArray());
                 client.setCallback(new MqttCallback() {

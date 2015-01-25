@@ -28,31 +28,31 @@ You have to activate the [MQTT binding](https://github.com/openhab/openhab/wiki/
 In your configuration/openhab.cfg file. 
 
 <pre>
-	################################### MQTT Transport #########################################
-	#
-	# Define your MQTT broker connections here for use in the MQTT Binding or MQTT
-	# Persistence bundles. Replace <broker> with a id you choose.
+################################### MQTT Transport #########################################
+#
+# Define your MQTT broker connections here for use in the MQTT Binding or MQTT
+# Persistence bundles. Replace <broker> with a id you choose.
 
-	# URL to the MQTT broker, e.g. tcp://localhost:1883 or ssl://localhost:8883
-	mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
+# URL to the MQTT broker, e.g. tcp://localhost:1883 or ssl://localhost:8883
+mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
 
-	# Optional. Client id (max 23 chars) to use when connecting to the broker.
-	# If not provided a default one is generated.
-	#mqtt:<broker>.clientId=<clientId>
-	mqtt:mqtt-broker-home.clientId=openhabmqttclient
+# Optional. Client id (max 23 chars) to use when connecting to the broker.
+# If not provided a default one is generated.
+#mqtt:<broker>.clientId=<clientId>
+mqtt:mqtt-broker-home.clientId=openhabmqttclient
 
-	# Optional. User id to authenticate with the broker.
-	mqtt:mqtt-broker-home.user=USERNAME
+# Optional. User id to authenticate with the broker.
+mqtt:mqtt-broker-home.user=USERNAME
 
-	# Optional. Password to authenticate with the broker.
-	mqtt:mqtt-broker-home.pwd=PASSWORD
+# Optional. Password to authenticate with the broker.
+mqtt:mqtt-broker-home.pwd=PASSWORD
 </pre>
 
 #### Items configuration
 
 <pre> 
-	Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
-	Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
+Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
+Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
 </pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 
@@ -62,14 +62,14 @@ This will declare two variables on your MQTT broker that will be constantly fill
 Activate the [RRD4J binding](https://github.com/openhab/openhab/wiki/rrd4j-Persistence). Then in your configuration/persistence/rrd4.persist file :
 
 <pre>
-	// persistence strategies have a name and a definition and are referred to in the "Items" section
-	Strategies {
-		// for rrd charts, we need a cron strategy
-		everyMinute : "0 * * * * ?"
-	}
-	Items {
-		CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
-	}
+// persistence strategies have a name and a definition and are referred to in the "Items" section
+Strategies {
+	// for rrd charts, we need a cron strategy
+	everyMinute : "0 * * * * ?"
+}
+Items {
+	CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
+}
 </pre>
 
 #### Display graphs on web/android clients 
@@ -77,12 +77,12 @@ Activate the [RRD4J binding](https://github.com/openhab/openhab/wiki/rrd4j-Persi
 In your configuration/sitemap/ sitemap file, add something like : 
 
 <pre>
-	Text item=CurrentCost icon="chart" {
-		Frame {
-			Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
-			Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
-		}
+Text item=CurrentCost icon="chart" {
+	Frame {
+		Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
+		Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
 	}
+}
 </pre>
 
 ## How to run (from release)

@@ -25,16 +25,14 @@ Grab down the release : [1.0.0-SNAPSHOT](https://github.com/SR-G/current-cost-fo
 
 Just use the provided current-cost-forwarder.sh
 
-<pre>
-wget https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip
+<pre>wget https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip
 unzip -o current-cost-forwarder-1.0.0-SNAPSHOT.zip
 ./current-cost-forwarder.sh
 </pre>
 
 Options are : 
 
-<pre>
-Usage: <main class> [options]
+<pre>Usage: <main class> [options]
   Options:
         --broker-auth
        Is the broker auth (true|false)
@@ -78,8 +76,7 @@ By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyU
 
 Just drop the provided monit configuration file in /etc/monit/conf.d/ and adjust your paths.
 
-<pre>
-check process current-cost with pidfile /home/applications/currentcost/current-cost-forwarder.pid
+<pre>check process current-cost with pidfile /home/applications/currentcost/current-cost-forwarder.pid
   start program = "/home/bin/monitw.sh /home/applications/currentcost/current-cost-forwarder.sh"
     as uid root and gid root
     with timeout 15 seconds
@@ -96,8 +93,7 @@ Then you may use
 
 Have [Gradle](https://www.gradle.org). Just git clone the repository and build.
 
-<pre>
-git clone https://github.com/SR-G/current-cost-forwarder
+<pre>git clone https://github.com/SR-G/current-cost-forwarder
 cd current-cost-forwarder
 gradle build
 </pre>
@@ -105,8 +101,7 @@ gradle build
 ## How to deploy
 
 From the cloned repository (you have to adjust your SSH settings (hostname, login, home) in the build.gradle file) :
-<pre>
-gradle ssh
+<pre>gradle ssh
 </pre> 
 
 ## How to configure OpenHab

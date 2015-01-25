@@ -1,0 +1,9 @@
+bin
+dist
+tmp
+target
+work
+build
+.gradle
+.settings
+*.pid

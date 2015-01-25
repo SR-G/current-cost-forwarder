@@ -1,0 +1,149 @@
+// === Imports
+apply plugin: 'java'
+apply plugin: 'ssh'
+apply plugin: 'eclipse'
+
+buildscript {
+	repositories {
+		mavenCentral()
+		// maven { url "http://ciq-repository.inetpsa.com/repository/virtual/" }
+		// maven { url "http://yvash590:8081/nexus/content/groups/main-repository/" }
+		maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
+	}
+	dependencies {
+		classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
+		classpath 'com.github.rholder:gradle-one-jar:1.0.3'
+	}
+}
+
+// === Variables
+sourceCompatibility = 1.6
+version = '1.0.0-SNAPSHOT'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// === Repositories
+repositories {
+	mavenCentral()
+	// maven { url "http://ciq-repository.inetpsa.com/repository/virtual/" }
+	maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'current-cost-forwarder'
+		attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'org.tensin.ccf.boot.CurrentCostForwarder'
+	}
+}
+
+configurations {
+    all*.exclude group: 'stax', module: 'stax-api'
+    all*.exclude group: 'stax', module: 'stax'
+    all*.exclude group: 'org.slf4j', module: 'slf-jul'
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    all*.exclude group: 'org.slf4j', module: 'jcl-over-slf'
+}
+
+dependencies {
+    compile 'com.google.guava:guava:16.0'
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'commons-collections:commons-collections:3.2.1'
+    compile 'commons-io:commons-io:2.4'
+    compile 'commons-net:commons-net:3.2'
+    compile 'org.simpleframework:simple-xml:2.7.1'
+    compile 'com.beust:jcommander:1.30'
+    compile 'org.reflections:reflections:0.9.8'
+    compile 'com.google.guava:guava:17.0'
+
+    compile 'org.eclipse.paho:mqtt-client:0.4.0'
+    
+    compile 'org.apache.logging.log4j:log4j-api:2.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.1'
+    compile 'org.apache.logging.log4j:log4j-1.2-api:2.1'
+    compile 'org.apache.logging.log4j:log4j-jcl:2.1'
+    compile 'org.apache.logging.log4j:log4j-jul:2.1'
+    
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+}
+
+
+sourceSets {
+	main {
+		java { srcDir 'src/main/run/' }
+		resources {
+			srcDir 'src/main/java'
+			srcDir 'src/main/resources'
+		}
+	}
+}
+
+// === Eclipse configuration
+eclipse {
+	classpath {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
+
+eclipse.jdt.file.beforeMerged { jdt ->
+	// Load general jdt prefs
+	println("Updating eclipse settings")
+	jdt.load(file('.eclipse/org.eclipse.jdt.core.prefs'))
+}
+
+task eclipseSettings(type: Copy) {
+	println("Restoring UI prefs")
+	from rootProject.files(".eclipse/org.eclipse.jdt.ui.prefs")
+	into project.file('.settings/')
+	outputs.upToDateWhen { false }
+}
+
+tasks["eclipse"].dependsOn(eclipseSettings)
+
+// === SSH - http://gradle-ssh-plugin.github.io/
+ssh {
+	identity = file('c:/Profiles/u248663/.ssh/id_rsa')
+	knownHosts = allowAnyHosts    // Disable host key verification
+}
+
+// Add a remote host
+remotes {
+  webServer {
+	host = '192.168.8.40'
+	user = 'root'
+  }
+}
+
+task zip(type: Zip, dependsOn: build) {
+    from ('src/script/current-cost-forwarder.sh') {
+        fileMode 0755
+    }
+    into('lib') {
+        from configurations.runtime
+    }
+    into('lib') {
+        from 'build/libs/current-cost-forwarder-' + version + '.jar'
+    }
+}
+
+task deploy(type: SshTask, dependsOn: zip) {
+    description = 'Deploys an application to the server.'
+    ssh {
+      // Enable PTY allocation for sudo
+      pty = true
+    }
+    session(remotes.webServer) {
+      // Put a built WAR to the server
+      // put war.archivePath, '/home/login/u248663/'
+      def dest = '/home/applications/currentcost/'
+      put zip.archivePath, dest
+      execute 'cd /home/applications/currentcost/ ; unzip -o *.zip && rm *.zip'
+      // put "$projectDir/src/main/resources/redirect-dev.yml", dest
+      // put "$projectDir/redirections.xml", dest
+      // Restart the application server
+      // execute 'echo "1" ; hostname'
+    }
+}

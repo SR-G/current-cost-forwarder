@@ -1,0 +1,6 @@
+check process current-cost with pidfile /home/applications/currentcost/current-cost-forwarder.pid
+  start program = "/home/bin/monitw.sh /home/applications/currentcost/current-cost-forwarder.sh"
+    as uid root and gid root
+    with timeout 15 seconds
+ stop program = "/bin/bash -c 'kill -s SIGTERM `cat /home/applications/currentcost/current-cost-forwarder.pid`'"
+    as uid root and gid root

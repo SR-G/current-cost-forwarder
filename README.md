@@ -10,13 +10,88 @@ This allows to have :
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/schema-current-cost-forwarder.png)
 
+There are right now two ouput topics, one for temperature and one for watts. Base topic names are customizable, and you may have :
+
+- metrics/current-cost/watts
+- metrics/current-cost/temperature
+
+## How to configure OpenHab
+
+is a very promising domotic system. It can read values from MQTT and (for example) store them in a RRD file.
+
+### Acquiring values from MQTT
+
+You have to activate the [MQTT binding](https://github.com/openhab/openhab/wiki/MQTT-Binding).
+
+#### MQTT Broker configuration
+
+In your configuration/openhab.cfg file. 
+
+<pre>
+################################### MQTT Transport #########################################
+#
+# Define your MQTT broker connections here for use in the MQTT Binding or MQTT
+# Persistence bundles. Replace <broker> with a id you choose.
+
+# URL to the MQTT broker, e.g. tcp://localhost:1883 or ssl://localhost:8883
+mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
+
+# Optional. Client id (max 23 chars) to use when connecting to the broker.
+# If not provided a default one is generated.
+#mqtt:<broker>.clientId=<clientId>
+mqtt:mqtt-broker-home.clientId=openhabmqttclient
+
+# Optional. User id to authenticate with the broker.
+mqtt:mqtt-broker-home.user=USERNAME
+
+# Optional. Password to authenticate with the broker.
+mqtt:mqtt-broker-home.pwd=PASSWORD
+</pre>
+
+#### Items configuration
+
+<pre> 
+Number CurrentCostWatts {mqtt="<[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
+Number CurrentCostTemperature {mqtt="<[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
+</pre>
+
+This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 
+
+#### Storing in RRD4J
+
+Activate the [RRD4J binding](https://github.com/openhab/openhab/wiki/rrd4j-Persistence). Then in your configuration/persistence/rrd4.persist file :
+
+<pre>
+// persistence strategies have a name and a definition and are referred to in the "Items" section
+Strategies {
+	// for rrd charts, we need a cron strategy
+	everyMinute : "0 * * * * ?"
+}
+
+Items {
+	CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
+}
+</pre>
+
+#### Display graphs on web/android clients 
+
+In your configuration/sitemap/ sitemap file, add something like : 
+
+<pre>
+		Text item=CurrentCost icon="chart" {
+			Frame {
+				Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
+				Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
+			}
+		}
+</pre>
 ## How to run (from release)
 
 ### Distribution
 
 Grab down the release : TODO(serge) add link
 
-### Start
+### Start manually
 
 Just use the provided current-cost-forwarder.sh
 
@@ -64,6 +139,26 @@ Usage: <main class> [options]
 </pre>
 
 By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, ... You have to change the device name (through the --device parameter if you have several USB devices). If you are not running as root, the device has be readable by the user starting this program (chmod a+r,a+x /dev/ttyUSB7 for example). 
+
+### Start through monit
+
+[Monit](http://mmonit.com/monit/) allows to easily start/stop/restart processes.
+
+Just drop the provided monit configuration file in /etc/monit/conf.d and adjust your paths
+
+<pre>
+check process current-cost with pidfile /home/applications/currentcost/current-cost-forwarder.pid
+  start program = "/home/bin/monitw.sh /home/applications/currentcost/current-cost-forwarder.sh"
+    as uid root and gid root
+    with timeout 15 seconds
+ stop program = "/bin/bash -c 'kill -s SIGTERM `cat /home/applications/currentcost/current-cost-forwarder.pid`'"
+    as uid root and gid root
+</pre> 
+
+Then you may use
+> monit start current-cost
+> monit stop current-cost
+> monit restart current-cost	
 
 ## How to build (from sources)
 

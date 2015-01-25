@@ -6,7 +6,7 @@ This allows to have :
 - a **small computer box** (like a [Raspberry PI B+](http://www.raspberrypi.org/) or on my side a [Cubox-i2Ultra](http://www.raspberrypi.org/) mini-computer) (running [Debian](https://www.debian.org/) or [Archlinux](https://www.archlinux.org/) for example)
 - the **Current Cost EnviR**, connected through USB to that linux box 
 - a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same mini-computer, or may be installed elsewhere)
-- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/) 
+- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/))
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/schema-current-cost-forwarder.png)
 
@@ -92,7 +92,7 @@ monit restart current-cost
 
 ## How to build (from sources)
 
-Have [Gradle](https://www.gradle.org). Just git clone the repository and build.
+Have [Gradle](https://www.gradle.org) installed. Just git clone the repository and build.
 
 <pre>git clone https://github.com/SR-G/current-cost-forwarder
 cd current-cost-forwarder

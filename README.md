@@ -85,9 +85,10 @@ Just drop the provided monit configuration file in /etc/monit/conf.d/ and adjust
 </pre> 
 
 Then you may use
-> monit start current-cost
-> monit stop current-cost
-> monit restart current-cost	
+<pre>monit start current-cost
+monit stop current-cost
+monit restart current-cost
+</pre>	
 
 ## How to build (from sources)
 

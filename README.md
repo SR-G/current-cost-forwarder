@@ -17,7 +17,7 @@ There are right now two ouput topics, one for temperature and one for watts. Bas
 
 ## How to configure OpenHab
 
-is a very promising domotic system. It can read values from MQTT and (for example) store them in a RRD file.
+[Openhab](http://www.openhab.org/) is a very promising domotic system. It can read values from MQTT and (for example) store them in a RRD file.
 
 ### Acquiring values from MQTT
 
@@ -51,8 +51,8 @@ mqtt:mqtt-broker-home.pwd=PASSWORD
 #### Items configuration
 
 <pre> 
-Number CurrentCostWatts {mqtt="<[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
-Number CurrentCostTemperature {mqtt="<[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
+	Number CurrentCostWatts {mqtt="<[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
+	Number CurrentCostTemperature {mqtt="<[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
 </pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 

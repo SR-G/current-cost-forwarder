@@ -51,8 +51,8 @@ In your configuration/openhab.cfg file.
 #### Items configuration
 
 <pre> 
-	Number CurrentCostWatts {mqtt="<[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
-	Number CurrentCostTemperature {mqtt="<[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
+	Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
+	Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"} 
 </pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 

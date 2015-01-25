@@ -37,7 +37,7 @@ mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
 
 # Optional. Client id (max 23 chars) to use when connecting to the broker.
 # If not provided a default one is generated.
-#mqtt:<broker>.clientId=<clientId>
+#mqtt:&lt;broker&gt;.clientId=&lt;clientId&gt;
 mqtt:mqtt-broker-home.clientId=openhabmqttclient
 
 # Optional. User id to authenticate with the broker.
@@ -80,6 +80,8 @@ In your configuration/sitemap/ sitemap file, add something like :
 	}
 }
 </pre>
+
+![Chart Screenshot](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/images/screenshot-current-cost.png)
 
 ## How to run (from release)
 

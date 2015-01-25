@@ -19,7 +19,7 @@ There are right now two ouput topics, one for temperature and one for watts. Bas
 
 ### Distribution
 
-Grab down the release : 
+Grab down the release : https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip
 
 ### Start manually
 

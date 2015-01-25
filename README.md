@@ -5,7 +5,7 @@ This allows to have :
 
 - a **small computer box** (like a [Raspberry PI B+](http://www.raspberrypi.org/) or on my side a [Cubox-i2Ultra](http://www.raspberrypi.org/) mini-computer) (running [Debian](https://www.debian.org/) or [Archlinux](https://www.archlinux.org/) for example)
 - the **Current Cost EnviR**, connected through USB to that linux box 
-- a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same mini-computer)
+- a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same mini-computer, or may be installed elsewhere)
 - a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/) 
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/schema-current-cost-forwarder.png)
@@ -28,24 +28,24 @@ You have to activate the [MQTT binding](https://github.com/openhab/openhab/wiki/
 In your configuration/openhab.cfg file. 
 
 <pre>
-################################### MQTT Transport #########################################
-#
-# Define your MQTT broker connections here for use in the MQTT Binding or MQTT
-# Persistence bundles. Replace <broker> with a id you choose.
+	################################### MQTT Transport #########################################
+	#
+	# Define your MQTT broker connections here for use in the MQTT Binding or MQTT
+	# Persistence bundles. Replace <broker> with a id you choose.
 
-# URL to the MQTT broker, e.g. tcp://localhost:1883 or ssl://localhost:8883
-mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
+	# URL to the MQTT broker, e.g. tcp://localhost:1883 or ssl://localhost:8883
+	mqtt:mqtt-broker-home.url=tcp://192.168.8.40:1883
 
-# Optional. Client id (max 23 chars) to use when connecting to the broker.
-# If not provided a default one is generated.
-#mqtt:<broker>.clientId=<clientId>
-mqtt:mqtt-broker-home.clientId=openhabmqttclient
+	# Optional. Client id (max 23 chars) to use when connecting to the broker.
+	# If not provided a default one is generated.
+	#mqtt:<broker>.clientId=<clientId>
+	mqtt:mqtt-broker-home.clientId=openhabmqttclient
 
-# Optional. User id to authenticate with the broker.
-mqtt:mqtt-broker-home.user=USERNAME
+	# Optional. User id to authenticate with the broker.
+	mqtt:mqtt-broker-home.user=USERNAME
 
-# Optional. Password to authenticate with the broker.
-mqtt:mqtt-broker-home.pwd=PASSWORD
+	# Optional. Password to authenticate with the broker.
+	mqtt:mqtt-broker-home.pwd=PASSWORD
 </pre>
 
 #### Items configuration
@@ -62,15 +62,14 @@ This will declare two variables on your MQTT broker that will be constantly fill
 Activate the [RRD4J binding](https://github.com/openhab/openhab/wiki/rrd4j-Persistence). Then in your configuration/persistence/rrd4.persist file :
 
 <pre>
-// persistence strategies have a name and a definition and are referred to in the "Items" section
-Strategies {
-	// for rrd charts, we need a cron strategy
-	everyMinute : "0 * * * * ?"
-}
-
-Items {
-	CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
-}
+	// persistence strategies have a name and a definition and are referred to in the "Items" section
+	Strategies {
+		// for rrd charts, we need a cron strategy
+		everyMinute : "0 * * * * ?"
+	}
+	Items {
+		CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
+	}
 </pre>
 
 #### Display graphs on web/android clients 
@@ -78,13 +77,14 @@ Items {
 In your configuration/sitemap/ sitemap file, add something like : 
 
 <pre>
-		Text item=CurrentCost icon="chart" {
-			Frame {
-				Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
-				Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
-			}
+	Text item=CurrentCost icon="chart" {
+		Frame {
+			Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
+			Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
 		}
+	}
 </pre>
+
 ## How to run (from release)
 
 ### Distribution

@@ -81,7 +81,7 @@ In your configuration/sitemap/ sitemap file, add something like :
 }
 </pre>
 
-![Chart Screenshot](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/images/screenshot-current-cost.png)
+![Chart Screenshot](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/resources/images/screenshot-current-cost.png)
 
 ## How to run (from release)
 

@@ -44,12 +44,14 @@ mqtt:mqtt-broker-home.clientId=openhabmqttclient
 mqtt:mqtt-broker-home.user=USERNAME
 
 # Optional. Password to authenticate with the broker.
-mqtt:mqtt-broker-home.pwd=PASSWORD</pre>
+mqtt:mqtt-broker-home.pwd=PASSWORD
+</pre>
 
 #### Items configuration
 
 <pre>Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
-Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"}</pre>
+Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"}
+</pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 
 
@@ -64,7 +66,8 @@ Strategies {
 }
 Items {
 	CurrentCostWatts,CurrentCostTemperature : strategy = everyMinute, restoreOnStartup
-}</pre>
+}
+</pre>
 
 #### Display graphs on web/android clients 
 
@@ -75,7 +78,8 @@ In your configuration/sitemap/ sitemap file, add something like :
 		Chart item=CurrentCostWatts period=4h refresh=3600 visibility=[Weather_Chart_Period==2]
 		Chart item=CurrentCostWatts period=3D refresh=20000 visibility=[Weather_Chart_Period==2]
 	}
-}</pre>
+}
+</pre>
 
 ## How to run (from release)
 

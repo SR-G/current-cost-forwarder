@@ -102,8 +102,10 @@ gradle build
 ## How to deploy
 
 From the cloned repository (you have to adjust your SSH settings (hostname, login, home) in the build.gradle file) :
-<pre>gradle ssh
+<pre>gradle deploy
 </pre> 
+
+This action should generate the zip, upload the whole distribution and unzip it. You just have then to (re)start the program.  
 
 ## How to configure OpenHab
 

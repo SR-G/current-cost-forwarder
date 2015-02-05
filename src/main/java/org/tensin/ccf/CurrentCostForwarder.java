@@ -64,7 +64,7 @@ public class CurrentCostForwarder {
     private boolean usage;
 
     /** The device name. */
-    @Parameter(names = { "--device", "-d" }, description = "Device name to use, e.g., /dev/hidraw0. If not provided, the first /dev/hidraw will be used", required = false)
+    @Parameter(names = { "--device", "-d" }, description = "Device name to use, e.g., /dev/ttyUSB0. If not provided, the first /dev/ttyUSB* will be used", required = false)
     private String deviceName;
 
     /** The pid file name. */

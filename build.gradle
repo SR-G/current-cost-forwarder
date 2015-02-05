@@ -6,8 +6,6 @@ apply plugin: 'eclipse'
 buildscript {
 	repositories {
 		mavenCentral()
-		// maven { url "http://ciq-repository.inetpsa.com/repository/virtual/" }
-		// maven { url "http://yvash590:8081/nexus/content/groups/main-repository/" }
 		maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
 	}
 	dependencies {
@@ -25,7 +23,6 @@ version = '1.0.0-SNAPSHOT'
 // === Repositories
 repositories {
 	mavenCentral()
-	// maven { url "http://ciq-repository.inetpsa.com/repository/virtual/" }
 	maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
 }
 

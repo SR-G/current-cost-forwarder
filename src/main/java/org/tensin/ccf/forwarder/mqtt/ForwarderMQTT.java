@@ -128,6 +128,7 @@ public class ForwarderMQTT implements IForwarder {
                 .append(hiddenPassword).append("]");
                 options.setUserName(getMqttBrokerDefinition().getBrokerUsername());
                 options.setPassword(getMqttBrokerDefinition().getBrokerPassword().toCharArray());
+                // options.setConnectionTimeout(connectionTimeout);
                 client.setCallback(new MqttCallback() {
 
                     /**
@@ -245,5 +246,15 @@ public class ForwarderMQTT implements IForwarder {
                 throw new CCFException("Can't stop MQTT client", e);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.tensin.ccf.forwarder.IForwarder#type()
+     */
+    @Override
+    public String type() {
+        return "FORWARDER-MQTT";
     }
 }

@@ -8,12 +8,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.tensin.ccf.forwarder.IForwarder;
+import org.tensin.ccf.forwarder.console.ForwarderConsole;
 import org.tensin.ccf.forwarder.mqtt.ForwarderMQTT;
 import org.tensin.ccf.forwarder.mqtt.MQTTBrokerDefinition;
 import org.tensin.ccf.reader.CurrentCostReader;
@@ -21,6 +23,7 @@ import org.tensin.ccf.reader.CurrentCostReader;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.google.common.base.Joiner;
 
 /**
  * The Class CurrentCostForwarder.
@@ -35,11 +38,16 @@ public class CurrentCostForwarder {
      * @throws Exception
      *             the exception
      */
-    public static void main(final String[] args) throws Exception {
-        final CurrentCostForwarder starter = new CurrentCostForwarder();
-        starter.parseArguments(args);
-        starter.initPid();
-        starter.start();
+    public static void main(final String[] args) {
+        try {
+            final CurrentCostForwarder starter = new CurrentCostForwarder();
+            starter.parseArguments(args);
+            starter.initPid();
+            starter.start();
+        } catch (final Exception e) {
+            LOGGER.error("Internal current cost forwarder error", e);
+            System.exit(1);
+        }
     }
 
     /** Logger. */
@@ -102,13 +110,14 @@ public class CurrentCostForwarder {
     private CurrentCostReader reader;
 
     /**
-     * Activate forwarder.
+     * Activate forwarder console.
      *
      * @throws CCFException
-     *             the CCF exception
      */
-    private void activateForwarder() throws CCFException {
-        activateForwarderMQTT();
+    private void activateForwarderConsole() throws CCFException {
+        final ForwarderConsole forwarderConsole = new ForwarderConsole();
+        forwarderConsole.start();
+        forwarders.add(forwarderConsole);
     }
 
     /**
@@ -133,6 +142,20 @@ public class CurrentCostForwarder {
     }
 
     /**
+     * Activate forwarder.
+     *
+     * @throws CCFException
+     *             the CCF exception
+     */
+    private void activateForwarders() throws CCFException {
+        if (isDebug()) {
+            activateForwarderConsole();
+        }
+        activateForwarderMQTT();
+        dumpActivatedForwarders();
+    }
+
+    /**
      * Activate reader.
      *
      * @throws CCFException
@@ -149,6 +172,17 @@ public class CurrentCostForwarder {
         reader.setDeviceName(deviceName);
         reader.setReconnectionTimeout(reconnectionTimeout);
         reader.start();
+    }
+
+    /**
+     * Dump activated forwarders.
+     */
+    private void dumpActivatedForwarders() {
+        final Collection<String> names = new TreeSet<String>();
+        for (final IForwarder forwarder : forwarders) {
+            names.add(forwarder.type());
+        }
+        LOGGER.info("Activated forwarders are [" + Joiner.on(", ").join(names) + "]");
     }
 
     /**
@@ -397,7 +431,7 @@ public class CurrentCostForwarder {
         LogInitializer.setDebug(debug);
         final long start = System.currentTimeMillis();
         LOGGER.info("Now starting CurrentCostForwarder");
-        activateForwarder();
+        activateForwarders();
         activateReader();
         LOGGER.info("CurrentCostForwarder started in [" + (System.currentTimeMillis() - start) + "ms]");
     }

@@ -33,4 +33,11 @@ public interface IForwarder {
      *             the CCF exception
      */
     void stop() throws CCFException;
+
+    /**
+     * Type.
+     *
+     * @return the string
+     */
+    String type();
 }

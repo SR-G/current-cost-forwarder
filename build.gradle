@@ -45,6 +45,7 @@ configurations {
     all*.exclude group: 'org.slf4j', module: 'slf-jul'
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
     all*.exclude group: 'org.slf4j', module: 'jcl-over-slf'
+    all*.exclude group: 'xpp3', module: 'xpp3'
 }
 
 dependencies {

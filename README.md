@@ -77,7 +77,7 @@ Example of valid device :
 crw-rw---T 1 root dialout 188, 0 Jan 1 1970 /dev/ttyUSB0
 </pre>
 
-To check if the current cost if correctly found under linux :
+To check if the current cost is correctly found under linux (the Current Cost will be shown as a "Prolific Technology" entry) :
 <pre>cubox-i# lsusb
 (...)
 Bus 002 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port

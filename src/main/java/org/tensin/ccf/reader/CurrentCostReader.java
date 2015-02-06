@@ -275,19 +275,21 @@ public class CurrentCostReader extends Thread {
         super.run();
         FileInputStream fis = null;
         showErrorMessagesOnInit = true;
+        // Reconnection mechanism
         while (active) {
-            if (fis != null) {
-                read(fis);
-                fis = null; // important (the read() method is a continuous loop, will only exit if/when there is a problem (device unplugged > I/O exception
-                // internally catched into read())
-            } else {
-                fis = initFileInputStreamDevice(deviceName);
-                if (fis == null) {
-                    try {
-                        Thread.sleep(getReconnectionTimeout());
-                    } catch (final InterruptedException e) {
+            try {
+                if (fis != null) {
+                    read(fis);
+                    fis = null; // important (the read() method is a continuous loop, will only exit if/when there is a problem (device unplugged > I/O exception
+                    // internally catched into read())
+                } else {
+                    fis = initFileInputStreamDevice(deviceName);
+                    if (fis == null) {
+                        sleepAFewMilliseconds(getReconnectionTimeout());
                     }
                 }
+            } catch (final Exception e) {
+                LOGGER.error("Unexpected exception while opening device or reading data", e);
             }
         }
     }
@@ -320,6 +322,19 @@ public class CurrentCostReader extends Thread {
      */
     public void setReconnectionTimeout(final int reconnectionTimeout) {
         this.reconnectionTimeout = reconnectionTimeout;
+    }
+
+    /**
+     * Sleep a few milliseconds.
+     *
+     * @param ms
+     *            the ms
+     */
+    private void sleepAFewMilliseconds(final int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (final InterruptedException e) {
+        }
     }
 
     /**

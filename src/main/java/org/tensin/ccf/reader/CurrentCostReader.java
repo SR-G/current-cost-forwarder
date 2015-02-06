@@ -226,9 +226,13 @@ public class CurrentCostReader extends Thread {
     private void process(final String xml) {
         LOGGER.debug("Now processing XML [" + xml + "]");
 
+        // We can receive different XML structures, so we are
+        // trying first the most common one (raw values) and if it fails
+        // we are trying the history decoding
+        // A better way to proceed would be to try to detect what the messages are before deserializing
         if (!decodeAsRawMessage(xml)) {
             if (!decodeAsHistMessage(xml)) {
-                LOGGER.error("Can't decode XML [" + xml + "]");
+                LOGGER.error("Can't decode XML [" + xml + "] (neither raw nor history messages)");
             }
         }
     }

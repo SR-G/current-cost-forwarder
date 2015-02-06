@@ -84,6 +84,31 @@ Bus 002 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
 (...)
 </pre> 
 
+To map your /dev/ttyUSBx device to Bus ID / Device ID (just put a device in --name) : 
+
+<pre>cubox-i# echo /dev/bus/usb/`udevadm info --name=/dev/ttyUSB0 --attribute-walk | sed -n 's/\s*ATTRS{\(\(devnum\)\|\(busnum\)\)}==\"\([^\"]\+\)\"/\4/p' | head -n 2 | awk '{$1 = sprintf("%03d", $1); print}'` | tr " " "/"
+/dev/bus/usb/002/002
+</pre>
+
+To have additionnal informations on your device :
+<pre>cubox-i# lsusb -D /dev/bus/usb/002/002
+Device: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               1.10
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0
+  bDeviceProtocol         0
+  bMaxPacketSize0        64
+  idVendor           0x067b Prolific Technology, Inc.
+  idProduct          0x2303 PL2303 Serial Port
+  bcdDevice            3.00
+  iManufacturer           1 Prolific Technology Inc.
+  iProduct                2 USB-Serial Controller
+  (...)
+</pre>
+
 ### Start through monit
 
 [Monit](http://mmonit.com/monit/) allows to easily start/stop/restart processes.

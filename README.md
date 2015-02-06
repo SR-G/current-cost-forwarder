@@ -52,8 +52,8 @@ Options are :
        Debug mode
        Default: false
     --device, -d
-       Device name to use, e.g., /dev/hidraw0. If not provided, the first
-       /dev/hidraw will be used
+       Device name to use, e.g., /dev/ttyUSB0. If not provided, the first
+       /dev/ttyUSBx device will be used
         --pid
        The PID filename. Default is current directory, file
        current-cost-forwarder.pid
@@ -61,7 +61,6 @@ Options are :
         --reconnection-timeout
        When expected device is not found (or was found previously but not
        anymore), we'll wait this timeout before trying to reconnect. In milliseconds.
-       Default 2000.
        Default: 2000
     -h, --usage, --help
        Shows available commands

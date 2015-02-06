@@ -52,7 +52,7 @@ public class CurrentCostForwarder {
     private static final String DEFAULT_BROKER_DATA_DIR = "/var/tmp/";
 
     /** The reconnection timeout. */
-    @Parameter(names = { "--reconnection-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. In milliseconds. Default 2000.", required = false)
+    @Parameter(names = { "--reconnection-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. In milliseconds.", required = false)
     private final int reconnectionTimeout = CurrentCostReader.DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
 
     /** The debug. */

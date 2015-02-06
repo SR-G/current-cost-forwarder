@@ -31,6 +31,11 @@ jar {
 		attributes 'Implementation-Title': 'current-cost-forwarder'
 		attributes 'Implementation-Version': version
         attributes 'Main-Class': 'org.tensin.ccf.boot.CurrentCostForwarder'
+        attributes 'Source-Compatibility': project.sourceCompatibility
+        attributes 'Target-Compatibility': project.targetCompatibility
+        attributes 'Built-JDK': System.getProperty('java.version')
+        attributes 'Built-Date': new Date()
+        // attributes 'Built-Host': getHostname()
 	}
 }
 

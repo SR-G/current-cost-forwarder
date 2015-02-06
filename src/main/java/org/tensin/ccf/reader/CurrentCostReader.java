@@ -288,8 +288,8 @@ public class CurrentCostReader extends Thread {
                         sleepAFewMilliseconds(getReconnectionTimeout());
                     }
                 }
-            } catch (final Exception e) {
-                LOGGER.error("Unexpected exception while opening device or reading data", e);
+            } catch (final Throwable t) {
+                LOGGER.error("Unexpected exception while opening device or reading data", t);
             }
         }
     }

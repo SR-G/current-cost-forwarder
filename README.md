@@ -67,7 +67,22 @@ Options are :
        Default: false
 </pre>
 
-By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, ... You have to change the device name (through the --device parameter if you have several USB devices). If you are not running as root, the device has be readable by the user starting this program (chmod a+r,a+x /dev/ttyUSB7 for example). 
+By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, aso (the first one will be used). You have to change the device name (through the --device parameter) if you have several USB devices.
+
+If you are not running as root, the device has be readable by the user starting this program (chmod a+r,a+x /dev/ttyUSB7 for example). 
+
+Example of valid device :
+
+<pre>cubox-i# ll /dev/tty*USB*
+crw-rw---T 1 root dialout 188, 0 Jan 1 1970 /dev/ttyUSB0
+</pre>
+
+To check if the current cost if correctly found under linux :
+<pre>cubox-i# lsusb
+(...)
+Bus 002 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
+(...)
+</pre> 
 
 ### Start through monit
 

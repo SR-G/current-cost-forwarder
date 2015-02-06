@@ -244,10 +244,12 @@ public class CurrentCostReader extends Thread {
      *            the fis
      */
     private void read(final FileInputStream fis) {
+        LOGGER.debug("Now starting acquisition from device");
         try {
             int r;
             StringBuilder sb = new StringBuilder();
             while ((r = fis.read()) != -1) {
+                LOGGER.debug("Just received some characters from device");
                 if (r == 13) {
                     process(sb.toString());
                     sb = new StringBuilder();

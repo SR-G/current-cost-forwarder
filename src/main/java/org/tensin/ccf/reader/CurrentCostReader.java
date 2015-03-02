@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.simpleframework.xml.Serializer;
@@ -218,21 +219,48 @@ public class CurrentCostReader extends Thread {
     }
 
     /**
+     * Checks if is trame ended.
+     *
+     * @param r
+     *            the r
+     * @param sb
+     *            the sb
+     * @return true, if is trame ended
+     */
+    private boolean isTrameEnded(final int r, final StringBuilder sb) {
+        // Old current cost send 13 as line ending
+        if (r == 13) {
+            return true;
+        }
+        // new ones seems to send 10 as shown under http://pastebin.com/Qy10NNJc
+        if (r == 10) {
+            return true;
+        }
+        // if (sb.toString().endsWith("</msg>")) {
+        // return true;
+        // }
+        return false;
+    }
+
+    /**
      * Process.
      *
      * @param xml
      *            the xml
      */
     private void process(final String xml) {
-        LOGGER.debug("Now processing XML [" + xml + "]");
+        // New current cost may send 2 EoL characters, so we don't want to process empty string
+        if (StringUtils.isNotEmpty(xml)) {
+            LOGGER.debug("Now processing XML [" + xml + "]");
 
-        // We can receive different XML structures, so we are
-        // trying first the most common one (raw values) and if it fails
-        // we are trying the history decoding
-        // A better way to proceed would be to try to detect what the messages are before deserializing
-        if (!decodeAsRawMessage(xml)) {
-            if (!decodeAsHistMessage(xml)) {
-                LOGGER.error("Can't decode XML [" + xml + "] (neither raw nor history messages)");
+            // We can receive different XML structures, so we are
+            // trying first the most common one (raw values) and if it fails
+            // we are trying the history decoding
+            // A better way to proceed would be to try to detect what the messages are before deserializing
+            if (!decodeAsRawMessage(xml)) {
+                if (!decodeAsHistMessage(xml)) {
+                    LOGGER.error("Can't decode XML [" + xml + "] (neither raw nor history messages)");
+                }
             }
         }
     }
@@ -249,8 +277,8 @@ public class CurrentCostReader extends Thread {
             int r;
             StringBuilder sb = new StringBuilder();
             while ((r = fis.read()) != -1) {
-                LOGGER.debug("Just received some characters from device [" + (char) r + "] (" + r + ")");
-                if (r == 13) {
+                LOGGER.debug("Received character [" + (char) r + "] (" + r + ")");
+                if (isTrameEnded(r, sb)) {
                     process(sb.toString());
                     sb = new StringBuilder();
                 } else {

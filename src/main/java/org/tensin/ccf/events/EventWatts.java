@@ -18,6 +18,7 @@ public class EventWatts extends AbstractEvent implements IEvent {
      *            the watts
      */
     public EventWatts(final int watts) {
+        super();
         this.watts = watts;
     }
 

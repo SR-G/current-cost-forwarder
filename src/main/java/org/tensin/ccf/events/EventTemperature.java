@@ -21,6 +21,7 @@ public class EventTemperature extends AbstractEvent implements IEvent {
      *            the temperature
      */
     public EventTemperature(final double temperature) {
+        super();
         this.temperature = temperature;
     }
 

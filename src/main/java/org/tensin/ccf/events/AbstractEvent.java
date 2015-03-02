@@ -1,11 +1,24 @@
 package org.tensin.ccf.events;
 
+import org.tensin.ccf.bean.BeanField;
 import org.tensin.ccf.bean.BeanHelper;
 
 /**
  * The Class AbstractEvent.
  */
 public abstract class AbstractEvent {
+
+    /** The timestamp. */
+    @BeanField
+    private final long timestamp;
+
+    /**
+     * Instantiates a new abstract event.
+     */
+    public AbstractEvent() {
+        super();
+        timestamp = System.currentTimeMillis();
+    }
 
     /**
      * {@inheritDoc}
@@ -15,6 +28,15 @@ public abstract class AbstractEvent {
     @Override
     public boolean equals(final Object obj) {
         return BeanHelper.equals(this, obj);
+    }
+
+    /**
+     * Gets the timestamp.
+     *
+     * @return the timestamp
+     */
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**

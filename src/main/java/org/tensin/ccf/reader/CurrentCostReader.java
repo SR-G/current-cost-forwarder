@@ -249,7 +249,7 @@ public class CurrentCostReader extends Thread {
             int r;
             StringBuilder sb = new StringBuilder();
             while ((r = fis.read()) != -1) {
-                LOGGER.debug("Just received some characters from device");
+                LOGGER.debug("Just received some characters from device [" + (char) r + "] (" + r + ")");
                 if (r == 13) {
                     process(sb.toString());
                     sb = new StringBuilder();

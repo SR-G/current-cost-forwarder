@@ -18,10 +18,12 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.strategy.VisitorStrategy;
 import org.tensin.ccf.CCFException;
+import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Constants;
+import org.tensin.ccf.TimeHelper;
 import org.tensin.ccf.events.EventTemperature;
 import org.tensin.ccf.events.EventWatts;
-import org.tensin.ccf.forwarder.IForwarder;
+import org.tensin.ccf.forwarder.ForwarderService;
 import org.tensin.ccf.model.CurrentCostVisitor;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
 import org.tensin.ccf.model.message.CurrentCostMessage;
@@ -44,13 +46,13 @@ public class CurrentCostReader extends Thread {
     private boolean showErrorMessagesOnInit;
 
     /** The Constant DEVICE_RECONNECTION_TIMEOUT. */
-    public static final int DEFAULT_DEVICE_RECONNECTION_TIMEOUT = 2000;
+    public static final CCFTimeUnit DEFAULT_DEVICE_RECONNECTION_TIMEOUT = CCFTimeUnit.parseTime("2s");
 
     /** The reconnection timeout. */
-    private int reconnectionTimeout = DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
+    private CCFTimeUnit reconnectionTimeout = DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
 
     /** The forwarders. */
-    private final Collection<IForwarder> forwarders;
+    private final ForwarderService forwarderService;
 
     /** The serializer. */
     private Serializer serializer;
@@ -58,11 +60,11 @@ public class CurrentCostReader extends Thread {
     /**
      * Instantiates a new current cost reader.
      *
-     * @param forwarders
+     * @param forwarderService
      *            the forwarders
      */
-    public CurrentCostReader(final Collection<IForwarder> forwarders) {
-        this.forwarders = forwarders;
+    public CurrentCostReader(final ForwarderService forwarderService) {
+        this.forwarderService = forwarderService;
     }
 
     /**
@@ -138,9 +140,7 @@ public class CurrentCostReader extends Thread {
      *             the CCF exception
      */
     private void forwardTemperature(final double temperature) throws CCFException {
-        for (final IForwarder forwarder : forwarders) {
-            forwarder.forward(new EventTemperature(temperature));
-        }
+        forwarderService.enqueue(new EventTemperature(temperature));
     }
 
     /**
@@ -152,9 +152,7 @@ public class CurrentCostReader extends Thread {
      *             the CCF exception
      */
     private void forwardWatts(final int watts) throws CCFException {
-        for (final IForwarder forwarder : forwarders) {
-            forwarder.forward(new EventWatts(watts));
-        }
+        forwarderService.enqueue(new EventWatts(watts));
     }
 
     /**
@@ -171,7 +169,7 @@ public class CurrentCostReader extends Thread {
      *
      * @return the reconnection timeout
      */
-    public int getReconnectionTimeout() {
+    public CCFTimeUnit getReconnectionTimeout() {
         return reconnectionTimeout;
     }
 
@@ -319,7 +317,7 @@ public class CurrentCostReader extends Thread {
                 } else {
                     fis = initFileInputStreamDevice(deviceName);
                     if (fis == null) {
-                        sleepAFewMilliseconds(getReconnectionTimeout());
+                        TimeHelper.wait(getReconnectionTimeout());
                     }
                 }
             } catch (final Throwable t) {
@@ -354,21 +352,8 @@ public class CurrentCostReader extends Thread {
      * @param reconnectionTimeout
      *            the new reconnection timeout
      */
-    public void setReconnectionTimeout(final int reconnectionTimeout) {
+    public void setReconnectionTimeout(final CCFTimeUnit reconnectionTimeout) {
         this.reconnectionTimeout = reconnectionTimeout;
-    }
-
-    /**
-     * Sleep a few milliseconds.
-     *
-     * @param ms
-     *            the ms
-     */
-    private void sleepAFewMilliseconds(final int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-        }
     }
 
     /**

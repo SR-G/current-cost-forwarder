@@ -1,12 +1,12 @@
 # Current Cost (EnviR) forwarder
 
-This project allows to bridge a [Current Cost EnviR](http://www.currentcost.com/) to a MQTT broker. Each data read from the Current Cost are forwarded to MQTT topics.
+This project allows to bridge a [Current Cost EnviR](http://www.currentcost.com/) to a MQTT broker. Each data read from the Current Cost are then forwarded to separated MQTT topics.
 This allows to have :
 
 - a **small computer box** (like a [Raspberry PI B+](http://www.raspberrypi.org/) or on my side a [Cubox-i2Ultra](http://www.raspberrypi.org/) mini-computer) (running [Debian](https://www.debian.org/) or [Archlinux](https://www.archlinux.org/) for example)
 - the **Current Cost EnviR**, connected through USB to that linux box 
-- a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same mini-computer, or may be installed elsewhere)
-- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/))
+- a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same host, or may be installed elsewhere)
+- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/)) (may be on the same host, or also located elsewhere)
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/schema-current-cost-forwarder.png)
 
@@ -19,7 +19,7 @@ There are right now two ouput topics, one for temperature and one for watts. Bas
 
 ### Distribution
 
-Grab down the release : [1.0.0-SNAPSHOT](https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip)
+Grab down the latest release : [1.0.0-SNAPSHOT](https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip)
 
 ### Start manually
 
@@ -42,6 +42,10 @@ Options are :
        Default: /var/tmp/
         --broker-password
        The MQTT broker password (if authed)
+        --broker-reconnect-timeout
+       The timeout between each reconnect on the broker. Example values : '30s',
+       '1m', '500ms', ...
+       Default: 5000ms
   *     --broker-topic
        The broker topic to publish on
   *     --broker-url
@@ -53,23 +57,26 @@ Options are :
        Default: false
     --device, -d
        Device name to use, e.g., /dev/ttyUSB0. If not provided, the first
-       /dev/ttyUSBx device will be used
+       /dev/ttyUSB* will be used
+        --device-reconnect-timeout
+       When expected device is not found (or was found previously but not
+       anymore), we'll wait this timeout before trying to reconnect. In milliseconds.
+       Default: 2000ms
         --pid
        The PID filename. Default is current directory, file
        current-cost-forwarder.pid
        Default: current-cost-forwarder.pid
-        --reconnection-timeout
-       When expected device is not found (or was found previously but not
-       anymore), we'll wait this timeout before trying to reconnect. In milliseconds.
-       Default: 2000
+        --timeout
+       Start/stop timeout. Example values : '30s', '1m', '500ms', ...
+       Default: 60000ms
     -h, --usage, --help
        Shows available commands
-       Default: false
+       Default: true
 </pre>
 
 By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, aso (the first one will be used). You have to change the device name (through the --device parameter) if you have several USB devices.
 
-If you are not running as root, the device has be readable by the user starting this program (chmod a+r,a+x /dev/ttyUSB7 for example). 
+If you are not running as root, the device has to be readable by the user starting this program ("sudo chmod a+r,a+x /dev/ttyUSB7" for example). 
 
 Example of valid device :
 
@@ -84,13 +91,13 @@ Bus 002 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
 (...)
 </pre> 
 
-To map your /dev/ttyUSBx device to Bus ID / Device ID (just put a device in --name) : 
+To check the mapping between your /dev/ttyUSBx device and the Bus ID / Device ID, use the following command (just put the right device under the --name parameter) : 
 
 <pre>cubox-i# echo /dev/bus/usb/`udevadm info --name=/dev/ttyUSB0 --attribute-walk | sed -n 's/\s*ATTRS{\(\(devnum\)\|\(busnum\)\)}==\"\([^\"]\+\)\"/\4/p' | head -n 2 | awk '{$1 = sprintf("%03d", $1); print}'` | tr " " "/"
 /dev/bus/usb/002/002
 </pre>
 
-To have additionnal informations on your device :
+To have additionnal informations about your device :
 <pre>cubox-i# lsusb -D /dev/bus/usb/002/002
 Device: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
 Device Descriptor:
@@ -140,7 +147,7 @@ gradle build
 
 ## How to deploy
 
-From the cloned repository (you have to adjust your SSH settings (hostname, login, home) in the build.gradle file) :
+You have to adjust your SSH settings (hostname, login, home) in the build.gradle file. Then, from the cloned repository, use :
 <pre>gradle deploy
 </pre> 
 

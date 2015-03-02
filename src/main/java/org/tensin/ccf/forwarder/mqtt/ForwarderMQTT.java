@@ -1,16 +1,11 @@
 package org.tensin.ccf.forwarder.mqtt;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.tensin.ccf.CCFException;
+import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Reducer;
 import org.tensin.ccf.bean.BeanField;
 import org.tensin.ccf.events.IEvent;
@@ -21,6 +16,28 @@ import org.tensin.ccf.forwarder.IForwarder;
  */
 public class ForwarderMQTT implements IForwarder {
 
+    /**
+     * Builds the.
+     *
+     * @param mqttBrokerDefinition
+     *            the mqtt broker definition
+     * @param brokerTopic
+     *            the broker topic
+     * @param brokerDataDir
+     *            the broker data dir
+     * @param brokerReconnectTimeout
+     * @return the forwarder mqtt
+     */
+    public static ForwarderMQTT build(final MQTTBrokerDefinition mqttBrokerDefinition, final String brokerTopic, final String brokerDataDir,
+            final CCFTimeUnit brokerReconnectTimeout) {
+        final ForwarderMQTT forwarderMQTT = new ForwarderMQTT();
+        forwarderMQTT.mqttBrokerDefinition = mqttBrokerDefinition;
+        forwarderMQTT.brokerTopic = brokerTopic;
+        forwarderMQTT.brokerDataDir = brokerDataDir;
+        forwarderMQTT.brokerReconnectTimeout = brokerReconnectTimeout;
+        return forwarderMQTT;
+    }
+
     /** Logger. */
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -29,7 +46,7 @@ public class ForwarderMQTT implements IForwarder {
     private MQTTBrokerDefinition mqttBrokerDefinition;
 
     /** The client. */
-    private MqttClient client;
+    private MQTTReconnectClient client;
 
     /** The broker topic. */
     @BeanField
@@ -38,6 +55,10 @@ public class ForwarderMQTT implements IForwarder {
     /** The broker data dir. */
     @BeanField
     private String brokerDataDir;
+
+    /** The broker reconnect timeout. */
+    @BeanField
+    private CCFTimeUnit brokerReconnectTimeout;
 
     /** The count. */
     private long count;
@@ -70,13 +91,11 @@ public class ForwarderMQTT implements IForwarder {
         }
         final MqttMessage message = new MqttMessage();
         message.setPayload(event.format().getBytes());
-        try {
+        if (client.isConnected()) {
             client.publish(topicName, message);
             count++;
-        } catch (MqttPersistenceException e) {
-            throw new CCFException("Can't publish message [" + message.toString() + "] on topic [" + topicName + "]", e);
-        } catch (MqttException e) {
-            throw new CCFException("Can't publish message [" + message.toString() + "] on topic [" + topicName + "]", e);
+        } else {
+            LOGGER.debug("Client not connected, can't forward event");
         }
     }
 
@@ -108,105 +127,13 @@ public class ForwarderMQTT implements IForwarder {
     }
 
     /**
-     * Inits the client mqtt.
+     * {@inheritDoc}
      *
-     * @throws CCFException
-     *             the CCF exception
+     * @see org.tensin.ccf.forwarder.IForwarder#nbThreads()
      */
-    private void initClientMQTT() throws CCFException {
-        final String previousUserDir = System.getProperty("user.dir");
-        try {
-            System.setProperty("user.dir", brokerDataDir);
-
-            final String clientId = MqttClient.generateClientId();
-            final MqttConnectOptions options = new MqttConnectOptions();
-            final StringBuilder sb = new StringBuilder();
-            if (getMqttBrokerDefinition().isBrokerAuth()) {
-                final String hiddenPassword = StringUtils.repeat("*", getMqttBrokerDefinition().getBrokerPassword() == null ? 0 : getMqttBrokerDefinition()
-                        .getBrokerPassword().length());
-                sb.append(", connection will be authentificated with username [").append(getMqttBrokerDefinition().getBrokerUsername()).append("], password [")
-                .append(hiddenPassword).append("]");
-                options.setUserName(getMqttBrokerDefinition().getBrokerUsername());
-                options.setPassword(getMqttBrokerDefinition().getBrokerPassword().toCharArray());
-                // options.setConnectionTimeout(connectionTimeout);
-                client.setCallback(new MqttCallback() {
-
-                    /**
-                     * {@inheritDoc}
-                     *
-                     * @see org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.Throwable)
-                     */
-                    @Override
-                    public void connectionLost(final Throwable arg0) {
-                        LOGGER.info("MQTT connection lost", arg0);
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     *
-                     * @see org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(org.eclipse.paho.client.mqttv3.IMqttDeliveryToken)
-                     */
-                    @Override
-                    public void deliveryComplete(final IMqttDeliveryToken arg0) {
-                        try {
-                            LOGGER.debug("Message delivered [" + arg0.getMessage().toString() + "]");
-                        } catch (MqttException e) {
-                            LOGGER.error("Can't read back message", e);
-                        }
-                    }
-
-                    /**
-                     * {@inheritDoc}
-                     *
-                     * @see org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(java.lang.String, org.eclipse.paho.client.mqttv3.MqttMessage)
-                     */
-                    @Override
-                    public void messageArrived(final String arg0, final MqttMessage arg1) throws Exception {
-                    }
-                });
-            } else {
-                sb.append(", without authentification");
-            }
-            LOGGER.info("Now starting MQTT client on broker url [" + getMqttBrokerDefinition().getBrokerUrl() + "], client ID is [" + clientId + "]"
-                    + sb.toString());
-
-            client = new MqttClient(getMqttBrokerDefinition().getBrokerUrl(), clientId);
-            client.connect(options);
-        } catch (MqttException e) {
-            throw new CCFException("Can't start MQTT client on broker url [" + getMqttBrokerDefinition().getBrokerUrl() + "]", e);
-        } finally {
-            System.setProperty("user.dir", previousUserDir);
-        }
-    }
-
-    /**
-     * Sets the broker data dir.
-     *
-     * @param brokerDataDir
-     *            the new broker data dir
-     */
-    public void setBrokerDataDir(final String brokerDataDir) {
-        this.brokerDataDir = brokerDataDir;
-    }
-
-    /**
-     * Sets the broker topic.
-     *
-     * @param brokerTopic
-     *            the new broker topic
-     */
-    public void setBrokerTopic(final String brokerTopic) {
-        this.brokerTopic = brokerTopic;
-    }
-
-    /**
-     * Sets the mqtt broker definition.
-     *
-     * @param mqttBrokerDefinition
-     *            the new mqtt broker definition
-     */
-    public void setMqttBrokerDefinition(final MQTTBrokerDefinition mqttBrokerDefinition) {
-        this.mqttBrokerDefinition = mqttBrokerDefinition;
+    @Override
+    public int nbThreads() {
+        return 1;
     }
 
     /**
@@ -217,7 +144,8 @@ public class ForwarderMQTT implements IForwarder {
     @Override
     public void start() throws CCFException {
         LOGGER.info("Starting MQTT forwarder with topic base name [" + brokerTopic + "], mqtt broker " + mqttBrokerDefinition.toString());
-        initClientMQTT();
+        client = MQTTReconnectClient.build(mqttBrokerDefinition, MqttClient.generateClientId(), brokerReconnectTimeout, brokerDataDir);
+        client.start();
     }
 
     /**
@@ -228,24 +156,7 @@ public class ForwarderMQTT implements IForwarder {
     @Override
     public void stop() throws CCFException {
         LOGGER.info("Stopping MQTT forwarder");
-        stopClientMQTT();
-    }
-
-    /**
-     * Stop client mqtt.
-     *
-     * @throws CCFException
-     *             the CCF exception
-     */
-    private void stopClientMQTT() throws CCFException {
-        if (client != null) {
-            LOGGER.info("Now stoping MQTT client");
-            try {
-                client.disconnect();
-            } catch (MqttException e) {
-                throw new CCFException("Can't stop MQTT client", e);
-            }
-        }
+        client.stop();
     }
 
     /**

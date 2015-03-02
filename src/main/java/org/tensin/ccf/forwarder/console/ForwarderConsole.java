@@ -11,6 +11,15 @@ import org.tensin.ccf.forwarder.IForwarder;
  */
 public class ForwarderConsole implements IForwarder {
 
+    /**
+     * Builds the.
+     *
+     * @return the forwarder console
+     */
+    public static ForwarderConsole build() {
+        return new ForwarderConsole();
+    }
+
     /** Logger. */
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -22,6 +31,16 @@ public class ForwarderConsole implements IForwarder {
     @Override
     public void forward(final IEvent event) throws CCFException {
         LOGGER.info("Recevied event [" + event.toString() + "]");
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.tensin.ccf.forwarder.IForwarder#nbThreads()
+     */
+    @Override
+    public int nbThreads() {
+        return 1;
     }
 
     /**
@@ -46,7 +65,7 @@ public class ForwarderConsole implements IForwarder {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.tensin.ccf.forwarder.IForwarder#type()
      */
     @Override

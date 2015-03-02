@@ -8,12 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.tensin.ccf.forwarder.ForwarderService;
 import org.tensin.ccf.forwarder.IForwarder;
 import org.tensin.ccf.forwarder.console.ForwarderConsole;
 import org.tensin.ccf.forwarder.mqtt.ForwarderMQTT;
@@ -23,7 +24,8 @@ import org.tensin.ccf.reader.CurrentCostReader;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.ServiceManager;
 
 /**
  * The Class CurrentCostForwarder.
@@ -35,10 +37,9 @@ public class CurrentCostForwarder {
      *
      * @param args
      *            the arguments
-     * @throws Exception
-     *             the exception
      */
     public static void main(final String[] args) {
+        Thread.currentThread().setName(Constants.THREAD_NAME + "-MAIN");
         try {
             final CurrentCostForwarder starter = new CurrentCostForwarder();
             starter.parseArguments(args);
@@ -59,9 +60,15 @@ public class CurrentCostForwarder {
     /** The Constant DEFAULT_BROKER_DATA_DIR. */
     private static final String DEFAULT_BROKER_DATA_DIR = "/var/tmp/";
 
+    /** The Constant DEFAULT_START_STOP_TIMEOUT_IN_SECONDS. */
+    private static final CCFTimeUnit DEFAULT_START_STOP_TIMEOUT = CCFTimeUnit.parseTime("60s");
+
+    /** The Constant DEFAULT_BROKER_RECONNECT_TIMEOUT. */
+    private static final CCFTimeUnit DEFAULT_BROKER_RECONNECT_TIMEOUT = CCFTimeUnit.parseTime("5s");
+
     /** The reconnection timeout. */
-    @Parameter(names = { "--reconnection-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. In milliseconds.", required = false)
-    private final int reconnectionTimeout = CurrentCostReader.DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
+    @Parameter(names = { "--device-reconnect-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. In milliseconds.", required = false)
+    private final CCFTimeUnit deviceReconnectTimeout = CurrentCostReader.DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
 
     /** The debug. */
     @Parameter(names = "--debug", description = "Debug mode", required = false)
@@ -103,43 +110,22 @@ public class CurrentCostForwarder {
     @Parameter(names = { "--broker-data-dir" }, description = "The MQTT broker data dir (for lock files)", required = false)
     private String brokerDataDir = DEFAULT_BROKER_DATA_DIR;
 
-    /** The forwarders. */
-    private final Collection<IForwarder> forwarders = new ArrayList<IForwarder>();
+    /** The broker data dir. */
+    @Parameter(names = { "--broker-reconnect-timeout" }, description = "The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', ...", required = false)
+    private CCFTimeUnit brokerReconnectTimeout = DEFAULT_BROKER_RECONNECT_TIMEOUT;
+
+    /** The start stop timeout. */
+    @Parameter(names = { "--timeout" }, description = "Start/stop timeout. Example values : '30s', '1m', '500ms', ...", required = false)
+    private CCFTimeUnit startStopTimeout = DEFAULT_START_STOP_TIMEOUT;
 
     /** The reader. */
-    private CurrentCostReader reader;
+    private CurrentCostReader reader; // TODO(serge) switch as a service
 
-    /**
-     * Activate forwarder console.
-     *
-     * @throws CCFException
-     */
-    private void activateForwarderConsole() throws CCFException {
-        final ForwarderConsole forwarderConsole = new ForwarderConsole();
-        forwarderConsole.start();
-        forwarders.add(forwarderConsole);
-    }
+    /** The forwarder service. */
+    private ForwarderService forwarderService;
 
-    /**
-     * Activate forwarder mqtt.
-     *
-     * @throws CCFException
-     *             the CCF exception
-     */
-    private void activateForwarderMQTT() throws CCFException {
-        final ForwarderMQTT forwarderMQTT = new ForwarderMQTT();
-        final MQTTBrokerDefinition mqttBrokerDefinition = MQTTBrokerDefinition.Builder.build();
-        mqttBrokerDefinition.setBrokerAuth(isBrokerAuth());
-        mqttBrokerDefinition.setBrokerPassword(getBrokerPassword());
-        mqttBrokerDefinition.setBrokerUrl(getBrokerUrl());
-        mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
-
-        forwarderMQTT.setBrokerTopic(brokerTopic);
-        forwarderMQTT.setBrokerDataDir(brokerDataDir);
-        forwarderMQTT.setMqttBrokerDefinition(mqttBrokerDefinition);
-        forwarderMQTT.start();
-        forwarders.add(forwarderMQTT);
-    }
+    /** The service manager. */
+    private ServiceManager serviceManager;
 
     /**
      * Activate forwarder.
@@ -148,41 +134,20 @@ public class CurrentCostForwarder {
      *             the CCF exception
      */
     private void activateForwarders() throws CCFException {
+        final Collection<IForwarder> forwarders = new ArrayList<IForwarder>();
+
         if (isDebug()) {
-            activateForwarderConsole();
+            forwarders.add(ForwarderConsole.build());
         }
-        activateForwarderMQTT();
-        dumpActivatedForwarders();
-    }
 
-    /**
-     * Activate reader.
-     *
-     * @throws CCFException
-     *             the CCF exception
-     */
-    private void activateReader() throws CCFException {
-        LOGGER.info("Now starting reader");
-        reader = new CurrentCostReader(forwarders);
-        if (StringUtils.isEmpty(deviceName)) {
-            deviceName = reader.detectDevice();
-        } else {
-            LOGGER.info("Using provided device name [" + deviceName + "]");
-        }
-        reader.setDeviceName(deviceName);
-        reader.setReconnectionTimeout(reconnectionTimeout);
-        reader.start();
-    }
+        final MQTTBrokerDefinition mqttBrokerDefinition = MQTTBrokerDefinition.Builder.build();
+        mqttBrokerDefinition.setBrokerAuth(isBrokerAuth());
+        mqttBrokerDefinition.setBrokerPassword(getBrokerPassword());
+        mqttBrokerDefinition.setBrokerUrl(getBrokerUrl());
+        mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
 
-    /**
-     * Dump activated forwarders.
-     */
-    private void dumpActivatedForwarders() {
-        final Collection<String> names = new TreeSet<String>();
-        for (final IForwarder forwarder : forwarders) {
-            names.add(forwarder.type());
-        }
-        LOGGER.info("Activated forwarders are [" + Joiner.on(", ").join(names) + "]");
+        forwarders.add(ForwarderMQTT.build(mqttBrokerDefinition, brokerTopic, brokerDataDir, brokerReconnectTimeout));
+        forwarderService = ForwarderService.build(forwarders);
     }
 
     /**
@@ -201,6 +166,15 @@ public class CurrentCostForwarder {
      */
     public String getBrokerPassword() {
         return brokerPassword;
+    }
+
+    /**
+     * Gets the broker reconnect timeout.
+     *
+     * @return the broker reconnect timeout
+     */
+    public CCFTimeUnit getBrokerReconnectTimeout() {
+        return brokerReconnectTimeout;
     }
 
     /**
@@ -246,6 +220,15 @@ public class CurrentCostForwarder {
      */
     public String getPidFileName() {
         return pidFileName;
+    }
+
+    /**
+     * Gets the start stop timeout.
+     *
+     * @return the start stop timeout
+     */
+    public CCFTimeUnit getStartStopTimeout() {
+        return startStopTimeout;
     }
 
     /**
@@ -318,7 +301,9 @@ public class CurrentCostForwarder {
         try {
             jCommander = new JCommander(this, args);
         } catch (final ParameterException e) {
-            LOGGER.error("Unrecognized options : " + e.getMessage());
+            if (!usage) {
+                LOGGER.error(e.getMessage());
+            }
             jCommander = new JCommander(this);
             usage(jCommander);
         }
@@ -359,6 +344,16 @@ public class CurrentCostForwarder {
      */
     public void setBrokerPassword(final String brokerPassword) {
         this.brokerPassword = brokerPassword;
+    }
+
+    /**
+     * Sets the broker reconnect timeout.
+     *
+     * @param brokerReconnectTimeout
+     *            the new broker reconnect timeout
+     */
+    public void setBrokerReconnectTimeout(final CCFTimeUnit brokerReconnectTimeout) {
+        this.brokerReconnectTimeout = brokerReconnectTimeout;
     }
 
     /**
@@ -422,6 +417,16 @@ public class CurrentCostForwarder {
     }
 
     /**
+     * Sets the start stop timeout.
+     *
+     * @param startStopTimeout
+     *            the new start stop timeout
+     */
+    public void setStartStopTimeout(final CCFTimeUnit startStopTimeout) {
+        this.startStopTimeout = startStopTimeout;
+    }
+
+    /**
      * Start.
      *
      * @throws CCFException
@@ -432,8 +437,44 @@ public class CurrentCostForwarder {
         final long start = System.currentTimeMillis();
         LOGGER.info("Now starting CurrentCostForwarder");
         activateForwarders();
-        activateReader();
+        startReader();
+        startServices();
         LOGGER.info("CurrentCostForwarder started in [" + (System.currentTimeMillis() - start) + "ms]");
+    }
+
+    /**
+     * Activate reader.
+     *
+     * @throws CCFException
+     *             the CCF exception
+     */
+    private void startReader() throws CCFException {
+        LOGGER.info("Now starting reader");
+        reader = new CurrentCostReader(forwarderService);
+        if (StringUtils.isEmpty(deviceName)) {
+            deviceName = reader.detectDevice();
+        } else {
+            LOGGER.info("Using provided device name [" + deviceName + "]");
+        }
+        reader.setDeviceName(deviceName);
+        reader.setReconnectionTimeout(deviceReconnectTimeout);
+        reader.start();
+    }
+
+    /**
+     * Start services.
+     *
+     * @throws CCFException
+     *             the CCF exception
+     */
+    private void startServices() throws CCFException {
+        serviceManager = new ServiceManager(ImmutableList.of(forwarderService));
+        serviceManager.startAsync();
+        // try {
+        // serviceManager.awaitHealthy(startStopTimeout, TimeUnit.SECONDS);
+        // } catch (TimeoutException e) {
+        // throw new CCFException("Can't start services in allowed timeout", e);
+        // }
     }
 
     /**
@@ -445,19 +486,7 @@ public class CurrentCostForwarder {
     public void stop() throws CCFException {
         LOGGER.info("Now stopping CurrentCostForwarder");
         stopReader();
-        stopFrowarder();
-    }
-
-    /**
-     * Stop frowarder.
-     *
-     * @throws CCFException
-     *             the CCF exception
-     */
-    private void stopFrowarder() throws CCFException {
-        for (final IForwarder forwarder : forwarders) {
-            forwarder.stop();
-        }
+        stopServices();
     }
 
     /**
@@ -466,6 +495,21 @@ public class CurrentCostForwarder {
     private void stopReader() {
         if (reader != null) {
             reader.setActive(false);
+        }
+    }
+
+    /**
+     * Stop frowarder.
+     *
+     * @throws CCFException
+     *             the CCF exception
+     */
+    private void stopServices() throws CCFException {
+        try {
+            serviceManager.stopAsync();
+            serviceManager.awaitStopped(startStopTimeout.getDuration(), startStopTimeout.getTimeUnit());
+        } catch (TimeoutException e) {
+            throw new CCFException("Can't stop services in allowed timeout", e);
         }
     }
 

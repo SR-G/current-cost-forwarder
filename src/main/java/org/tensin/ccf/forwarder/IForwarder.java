@@ -19,6 +19,13 @@ public interface IForwarder {
     void forward(final IEvent event) throws CCFException;
 
     /**
+     * Nb threads.
+     *
+     * @return the int
+     */
+    int nbThreads();
+
+    /**
      * Start.
      *
      * @throws CCFException

@@ -16,7 +16,7 @@ buildscript {
 
 // === Variables
 sourceCompatibility = 1.6
-version = '1.0.0-SNAPSHOT'
+version = '1.0.0'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

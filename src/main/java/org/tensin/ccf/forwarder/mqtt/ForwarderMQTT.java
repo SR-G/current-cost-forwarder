@@ -166,6 +166,6 @@ public class ForwarderMQTT implements IForwarder {
      */
     @Override
     public String type() {
-        return "FORWARDER-MQTT";
+        return "MQTT";
     }
 }

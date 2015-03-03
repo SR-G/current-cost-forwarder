@@ -138,7 +138,7 @@ public class ForwarderService extends AbstractIdleService {
                 @Override
                 public Thread newThread(final Runnable r) {
                     final Thread t = new Thread(r);
-                    t.setName(Constants.THREAD_NAME + "-FORWARDER-" + forwarder.type().toUpperCase());
+                    t.setName(Constants.THREAD_NAME + forwarder.type().toUpperCase());
                     return t;
                 }
 

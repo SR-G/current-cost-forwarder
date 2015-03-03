@@ -81,7 +81,7 @@ Raw messages read from the USB device looks like :
 
 ### Distribution
 
-Grab down the latest release : [1.0.0-SNAPSHOT](https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip)
+Grab down the latest release : [releases](https://github.com/SR-G/current-cost-forwarder/releases/download/)
 
 ### Start manually
 

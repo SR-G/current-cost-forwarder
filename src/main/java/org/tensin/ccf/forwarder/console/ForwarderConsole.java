@@ -35,7 +35,7 @@ public class ForwarderConsole implements IForwarder {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.tensin.ccf.forwarder.IForwarder#nbThreads()
      */
     @Override
@@ -70,6 +70,6 @@ public class ForwarderConsole implements IForwarder {
      */
     @Override
     public String type() {
-        return "FORWARDER-CONSOLE";
+        return "CONSOLE";
     }
 }

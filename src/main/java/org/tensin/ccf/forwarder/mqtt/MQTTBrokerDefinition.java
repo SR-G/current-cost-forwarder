@@ -177,7 +177,9 @@ public class MQTTBrokerDefinition {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(BeanHelper.toString(this));
-        sb.append(", broker-password [").append(StringUtils.repeat("*", brokerPassword == null ? 0 : brokerPassword.length())).append("]");
+        if (StringUtils.isNotEmpty(brokerPassword)) {
+            sb.append(", broker-password [").append(StringUtils.repeat("*", brokerPassword.length())).append("]");
+        }
         return sb.toString();
     }
 }

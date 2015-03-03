@@ -54,7 +54,7 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
     compile 'commons-net:commons-net:3.2'
     compile 'org.simpleframework:simple-xml:2.7.1'
-    compile 'com.beust:jcommander:1.30'
+    compile 'com.beust:jcommander:1.47'
     compile 'org.reflections:reflections:0.9.8'
     compile 'com.google.guava:guava:17.0'
 

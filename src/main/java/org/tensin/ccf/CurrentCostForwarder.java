@@ -67,7 +67,7 @@ public class CurrentCostForwarder {
     private static final CCFTimeUnit DEFAULT_BROKER_RECONNECT_TIMEOUT = CCFTimeUnit.parseTime("5s");
 
     /** The reconnection timeout. */
-    @Parameter(names = { "--device-reconnect-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. In milliseconds.", required = false)
+    @Parameter(names = { "--device-reconnect-timeout" }, description = "When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. Example values : '2s', '500ms', aso", required = false)
     private final CCFTimeUnit deviceReconnectTimeout = CurrentCostReader.DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
 
     /** The debug. */
@@ -111,7 +111,7 @@ public class CurrentCostForwarder {
     private String brokerDataDir = DEFAULT_BROKER_DATA_DIR;
 
     /** The broker data dir. */
-    @Parameter(names = { "--broker-reconnect-timeout" }, description = "The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', ...", required = false)
+    @Parameter(names = { "--broker-reconnect-timeout" }, description = "The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso", required = false)
     private CCFTimeUnit brokerReconnectTimeout = DEFAULT_BROKER_RECONNECT_TIMEOUT;
 
     /** The start stop timeout. */
@@ -521,7 +521,11 @@ public class CurrentCostForwarder {
      */
     private void usage(final JCommander jCommander) {
         final StringBuilder sb = new StringBuilder();
-        jCommander.usage(sb);
+        JCommanderUsage u = new JCommanderUsage(jCommander);
+        u.usage(sb, "");
+
+        // jCommander.setColumnSize(1024);
+        // jCommander.usage(sb, "");
         System.out.println(sb.toString());
         System.exit(0);
     }

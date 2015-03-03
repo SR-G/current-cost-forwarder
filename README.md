@@ -34,44 +34,19 @@ Options are :
 
 <pre>Usage: <main class> [options]
   Options:
-        --broker-auth
-       Is the broker auth (true|false)
-       Default: false
-        --broker-data-dir
-       The MQTT broker data dir (for lock files)
-       Default: /var/tmp/
-        --broker-password
-       The MQTT broker password (if authed)
-        --broker-reconnect-timeout
-       The timeout between each reconnect on the broker. Example values : '30s',
-       '1m', '500ms', ...
-       Default: 5000ms
-  *     --broker-topic
-       The broker topic to publish on
-  *     --broker-url
-       The MQTT broker URL to publish on
-        --broker-username
-       The MQTT broker username (if authed)
-        --debug
-       Debug mode
-       Default: false
-    --device, -d
-       Device name to use, e.g., /dev/ttyUSB0. If not provided, the first
-       /dev/ttyUSB* will be used
-        --device-reconnect-timeout
-       When expected device is not found (or was found previously but not
-       anymore), we'll wait this timeout before trying to reconnect. In milliseconds.
-       Default: 2000ms
-        --pid
-       The PID filename. Default is current directory, file
-       current-cost-forwarder.pid
-       Default: current-cost-forwarder.pid
-        --timeout
-       Start/stop timeout. Example values : '30s', '1m', '500ms', ...
-       Default: 60000ms
-    -h, --usage, --help
-       Shows available commands
-       Default: true
+    --broker-auth                    Is the broker auth (true|false). Default: false
+    --broker-data-dir                The MQTT broker data dir (for lock files). Default: /var/tmp/
+    --broker-password                The MQTT broker password (if authed)
+    --broker-reconnect-timeout       The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso. Default: 5000ms
+  * --broker-topic                   The broker topic to publish on
+  * --broker-url                     The MQTT broker URL to publish on
+    --broker-username                The MQTT broker username (if authed)
+    --debug                          Debug mode. Default: false
+    --device, -d                     Device name to use, e.g., /dev/ttyUSB0. If not provided, the first /dev/ttyUSB* will be used
+    --device-reconnect-timeout       When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. Example values : '2s', '500ms', aso. Default: 2000ms
+    --pid                            The PID filename. Default is current directory, file current-cost-forwarder.pid. Default: current-cost-forwarder.pid
+    --timeout                        Start/stop timeout. Example values : '30s', '1m', '500ms', .... Default: 60000ms
+    -h, --usage, --help              Shows available commands. Default: true
 </pre>
 
 By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, aso (the first one will be used). You have to change the device name (through the --device parameter) if you have several USB devices.

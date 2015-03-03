@@ -31,14 +31,19 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.simpleframework/simple-xml/2.7.1/9524c46dc06717c6bfb1464ae401898c9e6ea51d/simple-xml-2.7.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.30/745bd229231c1e28abfe54c9551b7eb98797d093/jcommander-1.30-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.30/c440b30a944ba199751551aee393f8aa03b3c327/jcommander-1.30.jar" exported="true">
+	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.47/8130d5385cfe1d085c98f4ce3a5810b63e8399fe/jcommander-1.47-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.47/7aa7cfcce8bba3f9ad912d1078f34ace3cc8c662/jcommander-1.47.jar" exported="true">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.30/5bc83b9eccac62cc9a92ed6e281695e9b3fc72c9/jcommander-1.30-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.47/a3d3c028f221177e9e175784961da89708bae78c/jcommander-1.47-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.reflections/reflections/0.9.8/f98abfc0ab1114d944786d467a3e26793fdc2bab/reflections-0.9.8-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.reflections/reflections/0.9.8/f723abb59bf512952bfc503838f70f81487a6993/reflections-0.9.8.jar" exported="true">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.reflections/reflections/0.9.8/ef6795259606da97ee11b839a53af5f7c6aa4644/reflections-0.9.8-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/7ca0efbeb87ca845b5d7a0ac9c21a4b7b95f7b28/guava-17.0-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/9c6ef172e8de35fd8d4d8783e4821e57cdef7445/guava-17.0.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/18a375325d213ba5ae90706790fbbb3fd51b9a01/guava-17.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Program Files/Eclipse_DEV/Integration/maven/repository/org/eclipse/paho/mqtt-client/0.4.0/mqtt-client-0.4.0.jar" exported="true"/>
@@ -109,9 +114,4 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.0.b2/d8525661c5a0a05702fa41873d250d135031ec25/xml-apis-1.0.b2-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.0.b2/3136ca936f64c9d68529f048c2618bd356bf85c9/xml-apis-1.0.b2.jar" exported="true"/>
-	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/7ca0efbeb87ca845b5d7a0ac9c21a4b7b95f7b28/guava-17.0-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/9c6ef172e8de35fd8d4d8783e4821e57cdef7445/guava-17.0.jar" exported="true">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/18a375325d213ba5ae90706790fbbb3fd51b9a01/guava-17.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 </classpath>

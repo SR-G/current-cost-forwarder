@@ -87,8 +87,8 @@ Grab down the latest release : [releases](https://github.com/SR-G/current-cost-f
 
 Just use the provided current-cost-forwarder.sh
 
-<pre>wget https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0-SNAPSHOT/current-cost-forwarder-1.0.0-SNAPSHOT.zip
-unzip -o current-cost-forwarder-1.0.0-SNAPSHOT.zip
+<pre>wget https://github.com/SR-G/current-cost-forwarder/releases/download/1.0.0/current-cost-forwarder-1.0.0.zip
+unzip -o current-cost-forwarder-1.0.0.zip
 ./current-cost-forwarder.sh
 </pre>
 
@@ -255,7 +255,7 @@ The main "event" logs are "reduced" once the program is started, in order to not
 
 <pre>0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Classpath :
      initial classpath=
-      - /home/applications/currentcost/lib/current-cost-forwarder-1.0.0-SNAPSHOT.jar
+      - /home/applications/currentcost/lib/current-cost-forwarder-1.0.0.jar
      dynamic classpath=
       - /home/applications/currentcost/lib/commons-collections-3.2.1.jar
       - /home/applications/currentcost/lib/commons-io-2.4.jar
@@ -265,7 +265,7 @@ The main "event" logs are "reduced" once the program is started, in order to not
       - /home/applications/currentcost/lib/dom4j-1.6.1.jar
       - /home/applications/currentcost/lib/guava-17.0.jar
       - /home/applications/currentcost/lib/javassist-3.12.1.GA.jar
-      - /home/applications/currentcost/lib/jcommander-1.30.jar
+      - /home/applications/currentcost/lib/jcommander-1.47.jar
       - /home/applications/currentcost/lib/log4j-1.2-api-2.1.jar
       - /home/applications/currentcost/lib/log4j-api-2.1.jar
       - /home/applications/currentcost/lib/log4j-core-2.1.jar
@@ -281,28 +281,28 @@ The main "event" logs are "reduced" once the program is started, in order to not
 0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Manifest :
      Manifest-Version: 1.0
      Implementation-Title: current-cost-forwarder
-     Implementation-Version: 1.0.0-SNAPSHOT
+     Implementation-Version: 1.0.0
      Main-Class: org.tensin.ccf.boot.CurrentCostForwarder
      Source-Compatibility: 1.6
      Target-Compatibility: 1.6
      Built-JDK: 1.7.0_71
-     Built-Date: Mon Mar 02 19:07:36 CET 2015
+     Built-Date: Tue Mar 03 21:51:53 CET 2015
 
-19:07:47.865 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Writing retrieved PID [17582] in PID file [/home/applications/currentcost/current-cost-forwarder.pid]
-19:07:47.908 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting CurrentCostForwarder
-19:07:47.953 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting reader
-19:07:47.954 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect mirror4j device in [/dev/] with pattern [ttyUSB.*]
-19:07:48.018 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Auto-detected current cost device [/dev/ttyUSB0]
-19:07:48.090 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Starting CurrentCostForwarder reader thread on device [/dev/ttyUSB0]
-19:07:48.106 [THREAD-CURRENT-COST-FORWARDER-READER] INFO  org.tensin.ccf.reader.CurrentCostReader - Now connected on specified device [/dev/ttyUSB0]
-19:07:48.266 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - CurrentCostForwarder started in [358ms]
-19:07:48.296 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Starting MQTT forwarder with topic base name [metrics/current-cost], mqtt broker MQTTBrokerDefinition : broker-auth [false], broker-url [tcp://192.168.8.40:1883], broker-password []
-19:07:48.334 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425319668331], reconnections each [5s], without authentification
-19:07:48.336 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection not done on MQTT broker, will now try to connect
-19:07:48.339 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.ForwarderService - Activated forwarders are [FORWARDER-MQTT]
-19:07:48.478 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection done on MQTT Broker
-19:07:50.935 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #0 EventTemperature : temperature [21.0], timestamp [1425319670927] on topic [metrics/current-cost/temperature]
-19:07:50.977 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #1 EventWatts : timestamp [1425319670932], watts [658] on topic [metrics/current-cost/watts]
-19:07:56.543 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #2 EventTemperature : temperature [21.0], timestamp [1425319676542] on topic [metrics/current-cost/temperature]
-19:07:56.573 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #3 EventWatts : timestamp [1425319676543], watts [662] on topic [metrics/current-cost/watts]
+21:52:29.903 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Writing retrieved PID [22995] in PID file [/home/applications/currentcost/current-cost-forwarder.pid]
+21:52:29.947 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting CurrentCostForwarder
+21:52:29.992 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting reader
+21:52:29.993 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect mirror4j device in [/dev/] with pattern [ttyUSB.*]
+21:52:30.056 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Auto-detected current cost device [/dev/ttyUSB0]
+21:52:30.128 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Starting CurrentCostForwarder reader thread on device [/dev/ttyUSB0]
+21:52:30.142 [THREAD-CURRENT-COST-FORWARDER-READER] INFO  org.tensin.ccf.reader.CurrentCostReader - Now connected on specified device [/dev/ttyUSB0]
+21:52:30.304 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - CurrentCostForwarder started in [357ms]
+21:52:30.334 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Starting MQTT forwarder with topic base name [metrics/current-cost], mqtt broker MQTTBrokerDefinition : broker-auth [false], broker-url [tcp://192.168.8.40:1883]
+21:52:30.372 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425415950369], reconnections each [5s], without authentification
+21:52:30.374 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection not done on MQTT broker, will now try to connect
+21:52:30.377 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.ForwarderService - Activated forwarders are [MQTT]
+21:52:30.528 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection done on MQTT Broker
+21:52:33.408 [THREAD-CURRENT-COST-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #0 EventTemperature : temperature [22.6], timestamp [1425415953399] on topic [metrics/current-cost/temperature]
+21:52:33.450 [THREAD-CURRENT-COST-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #1 EventWatts : timestamp [1425415953404], watts [594] on topic [metrics/current-cost/watts]
+21:52:39.026 [THREAD-CURRENT-COST-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #2 EventTemperature : temperature [21.6], timestamp [1425415959025] on topic [metrics/current-cost/temperature]
+21:52:39.056 [THREAD-CURRENT-COST-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #3 EventWatts : timestamp [1425415959026], watts [589] on topic [metrics/current-cost/watts]
 </pre>

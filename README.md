@@ -62,7 +62,8 @@ Device Descriptor:
 Messages read from the Current Cost EnviR are either "raw", either "hist". At this time, history messages are read but not forwarded (please open an issue if you have any need about that).
 
 Raw messages read from the USB device looks like : 
-<pre><msg>
+```xml
+<msg>
 	<src>CC128-v1.29</src>
 	<dsb>01432</dsb>
 	<time>21:05:19</time>
@@ -73,7 +74,8 @@ Raw messages read from the USB device looks like :
 	<ch1>
 		<watts>00655</watts>
 	</ch1>
-</msg></pre>
+</msg>
+```
 
 ## How to run (from release)
 
@@ -139,7 +141,8 @@ In addition to the --debug parameter, you can override the log level definitions
 
 The main "event" log are "reduced" once the program is started in order to not have too much logs generated. After a few minutes, only one forwaring log event will be written down each 100 values.
 
-<pre><?xml version="1.0" encoding="UTF-8"?>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
@@ -154,7 +157,8 @@ The main "event" log are "reduced" once the program is started in order to not h
 			<AppenderRef ref="Console" />
 		</Root>
 	</Loggers>
-</Configuration></pre> 
+</Configuration>
+``` 
 
 ### Example of expected start log
 

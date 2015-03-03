@@ -6,7 +6,7 @@ This allows to have :
 - a **small computer box** (like a [Raspberry PI B+](http://www.raspberrypi.org/) or on my side a [Cubox-i2Ultra](http://www.raspberrypi.org/) mini-computer) (running [Debian](https://www.debian.org/) or [Archlinux](https://www.archlinux.org/) for example)
 - the **Current Cost EnviR**, connected through USB to that linux box 
 - a **MQTT broker** (on my side [Mosquitto 3.1](http://mosquitto.org/)) running somewhere (may be on the same host, or may be installed elsewhere)
-- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/)) (may be on the same host, or also located elsewhere)
+- a **MQTT consumer**, for example a domotic system (on my side, [Openhab 1.6](http://www.openhab.org/)) (may be on the same host, or also located elsewhere) (see below for an example configuration)
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/resources/images/schema-current-cost-forwarder.png)
 
@@ -133,89 +133,6 @@ monit stop current-cost
 monit restart current-cost
 </pre>	
 
-## Logs
-
-### Changing log levels
-
-In addition to the --debug parameter, you can override the log level definitions with your own log4j2.xml.
-
-The main "event" log are "reduced" once the program is started in order to not have too much logs generated. After a few minutes, only one forwaring log event will be written down each 100 values.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
-	<Appenders>
-		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-		</Console>
-	</Appenders>
-	<Loggers>
-		<Logger name="org.reflections" level="WARN" />
-		<Logger name="org.tensin.xxx" level="DEBUG" />
-		<Logger name="org.eclipse.paho" level="DEBUG" />
-		<Root level="INFO">
-			<AppenderRef ref="Console" />
-		</Root>
-	</Loggers>
-</Configuration>
-``` 
-
-### Example of expected start log
-
-<pre>0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Classpath :
-     initial classpath=
-      - /home/applications/currentcost/lib/current-cost-forwarder-1.0.0-SNAPSHOT.jar
-     dynamic classpath=
-      - /home/applications/currentcost/lib/commons-collections-3.2.1.jar
-      - /home/applications/currentcost/lib/commons-io-2.4.jar
-      - /home/applications/currentcost/lib/commons-lang3-3.1.jar
-      - /home/applications/currentcost/lib/commons-logging-1.2.jar
-      - /home/applications/currentcost/lib/commons-net-3.2.jar
-      - /home/applications/currentcost/lib/dom4j-1.6.1.jar
-      - /home/applications/currentcost/lib/guava-17.0.jar
-      - /home/applications/currentcost/lib/javassist-3.12.1.GA.jar
-      - /home/applications/currentcost/lib/jcommander-1.30.jar
-      - /home/applications/currentcost/lib/log4j-1.2-api-2.1.jar
-      - /home/applications/currentcost/lib/log4j-api-2.1.jar
-      - /home/applications/currentcost/lib/log4j-core-2.1.jar
-      - /home/applications/currentcost/lib/log4j-jcl-2.1.jar
-      - /home/applications/currentcost/lib/log4j-jul-2.1.jar
-      - /home/applications/currentcost/lib/log4j-slf4j-impl-2.1.jar
-      - /home/applications/currentcost/lib/mqtt-client-0.4.0.jar
-      - /home/applications/currentcost/lib/reflections-0.9.8.jar
-      - /home/applications/currentcost/lib/simple-xml-2.7.1.jar
-      - /home/applications/currentcost/lib/slf4j-api-1.7.7.jar
-      - /home/applications/currentcost/lib/xml-apis-1.0.b2.jar
-
-0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Manifest :
-     Manifest-Version: 1.0
-     Implementation-Title: current-cost-forwarder
-     Implementation-Version: 1.0.0-SNAPSHOT
-     Main-Class: org.tensin.ccf.boot.CurrentCostForwarder
-     Source-Compatibility: 1.6
-     Target-Compatibility: 1.6
-     Built-JDK: 1.7.0_71
-     Built-Date: Mon Mar 02 19:07:36 CET 2015
-
-19:07:47.865 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Writing retrieved PID [17582] in PID file [/home/applications/currentcost/current-cost-forwarder.pid]
-19:07:47.908 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting CurrentCostForwarder
-19:07:47.953 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting reader
-19:07:47.954 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect mirror4j device in [/dev/] with pattern [ttyUSB.*]
-19:07:48.018 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Auto-detected current cost device [/dev/ttyUSB0]
-19:07:48.090 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Starting CurrentCostForwarder reader thread on device [/dev/ttyUSB0]
-19:07:48.106 [THREAD-CURRENT-COST-FORWARDER-READER] INFO  org.tensin.ccf.reader.CurrentCostReader - Now connected on specified device [/dev/ttyUSB0]
-19:07:48.266 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - CurrentCostForwarder started in [358ms]
-19:07:48.296 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Starting MQTT forwarder with topic base name [metrics/current-cost], mqtt broker MQTTBrokerDefinition : broker-auth [false], broker-url [tcp://192.168.8.40:1883], broker-password []
-19:07:48.334 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425319668331], reconnections each [5s], without authentification
-19:07:48.336 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection not done on MQTT broker, will now try to connect
-19:07:48.339 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.ForwarderService - Activated forwarders are [FORWARDER-MQTT]
-19:07:48.478 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection done on MQTT Broker
-19:07:50.935 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #0 EventTemperature : temperature [21.0], timestamp [1425319670927] on topic [metrics/current-cost/temperature]
-19:07:50.977 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #1 EventWatts : timestamp [1425319670932], watts [658] on topic [metrics/current-cost/watts]
-19:07:56.543 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #2 EventTemperature : temperature [21.0], timestamp [1425319676542] on topic [metrics/current-cost/temperature]
-19:07:56.573 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #3 EventWatts : timestamp [1425319676543], watts [662] on topic [metrics/current-cost/watts]
-</pre>
-
 ## How to build (from sources)
 
 Have [Gradle](https://www.gradle.org) installed. Just git clone the repository and build.
@@ -300,3 +217,92 @@ In your configuration/sitemap/ sitemap file, add something like :
 </pre>
 
 ![Chart Screenshot](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/resources/images/screenshot-current-cost.png)
+
+
+## About Current Cost Forwarder Logs
+
+### Changing log levels
+
+In addition to the --debug parameter, you can override the log level definitions of the forwarder with your own log4j2.xml.
+
+Place this file (for example) in the home directory and in the .sh set the property log4j.configurationFile, e.g. : 
+
+<pre>java -Xms92M -Xmx128M -Dlog4j.configurationFile=${CURRENT_PATH}/log4j2.xml -jar "${LIB_PATH}/${MAIN_JAR}" --pid ${CURRENT_PATH}/current-cost-forwarder.pid --broker-url "tcp://192.168.8.40:1883" --broker-topic "metrics/current-cost" $* 
+</pre>
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.reflections" level="WARN" />
+		<Logger name="org.tensin.xxx" level="DEBUG" />
+		<Logger name="org.eclipse.paho" level="DEBUG" />
+		<Root level="INFO">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>
+``` 
+
+The main "event" logs are "reduced" once the program is started, in order to not have too much logs generated. After a few minutes, only one log about forwarded events will be written down each 100 events.
+
+### Example of expected start log
+
+<pre>0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Classpath :
+     initial classpath=
+      - /home/applications/currentcost/lib/current-cost-forwarder-1.0.0-SNAPSHOT.jar
+     dynamic classpath=
+      - /home/applications/currentcost/lib/commons-collections-3.2.1.jar
+      - /home/applications/currentcost/lib/commons-io-2.4.jar
+      - /home/applications/currentcost/lib/commons-lang3-3.1.jar
+      - /home/applications/currentcost/lib/commons-logging-1.2.jar
+      - /home/applications/currentcost/lib/commons-net-3.2.jar
+      - /home/applications/currentcost/lib/dom4j-1.6.1.jar
+      - /home/applications/currentcost/lib/guava-17.0.jar
+      - /home/applications/currentcost/lib/javassist-3.12.1.GA.jar
+      - /home/applications/currentcost/lib/jcommander-1.30.jar
+      - /home/applications/currentcost/lib/log4j-1.2-api-2.1.jar
+      - /home/applications/currentcost/lib/log4j-api-2.1.jar
+      - /home/applications/currentcost/lib/log4j-core-2.1.jar
+      - /home/applications/currentcost/lib/log4j-jcl-2.1.jar
+      - /home/applications/currentcost/lib/log4j-jul-2.1.jar
+      - /home/applications/currentcost/lib/log4j-slf4j-impl-2.1.jar
+      - /home/applications/currentcost/lib/mqtt-client-0.4.0.jar
+      - /home/applications/currentcost/lib/reflections-0.9.8.jar
+      - /home/applications/currentcost/lib/simple-xml-2.7.1.jar
+      - /home/applications/currentcost/lib/slf4j-api-1.7.7.jar
+      - /home/applications/currentcost/lib/xml-apis-1.0.b2.jar
+
+0 [main] INFO org.tensin.ccf.boot.CurrentCostForwarder - Manifest :
+     Manifest-Version: 1.0
+     Implementation-Title: current-cost-forwarder
+     Implementation-Version: 1.0.0-SNAPSHOT
+     Main-Class: org.tensin.ccf.boot.CurrentCostForwarder
+     Source-Compatibility: 1.6
+     Target-Compatibility: 1.6
+     Built-JDK: 1.7.0_71
+     Built-Date: Mon Mar 02 19:07:36 CET 2015
+
+19:07:47.865 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Writing retrieved PID [17582] in PID file [/home/applications/currentcost/current-cost-forwarder.pid]
+19:07:47.908 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting CurrentCostForwarder
+19:07:47.953 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting reader
+19:07:47.954 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect mirror4j device in [/dev/] with pattern [ttyUSB.*]
+19:07:48.018 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Auto-detected current cost device [/dev/ttyUSB0]
+19:07:48.090 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Starting CurrentCostForwarder reader thread on device [/dev/ttyUSB0]
+19:07:48.106 [THREAD-CURRENT-COST-FORWARDER-READER] INFO  org.tensin.ccf.reader.CurrentCostReader - Now connected on specified device [/dev/ttyUSB0]
+19:07:48.266 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - CurrentCostForwarder started in [358ms]
+19:07:48.296 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Starting MQTT forwarder with topic base name [metrics/current-cost], mqtt broker MQTTBrokerDefinition : broker-auth [false], broker-url [tcp://192.168.8.40:1883], broker-password []
+19:07:48.334 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425319668331], reconnections each [5s], without authentification
+19:07:48.336 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection not done on MQTT broker, will now try to connect
+19:07:48.339 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.ForwarderService - Activated forwarders are [FORWARDER-MQTT]
+19:07:48.478 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection done on MQTT Broker
+19:07:50.935 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #0 EventTemperature : temperature [21.0], timestamp [1425319670927] on topic [metrics/current-cost/temperature]
+19:07:50.977 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #1 EventWatts : timestamp [1425319670932], watts [658] on topic [metrics/current-cost/watts]
+19:07:56.543 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #2 EventTemperature : temperature [21.0], timestamp [1425319676542] on topic [metrics/current-cost/temperature]
+19:07:56.573 [THREAD-CURRENT-COST-FORWARDER-FORWARDER-FORWARDER-MQTT] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Forwarding event #3 EventWatts : timestamp [1425319676543], watts [662] on topic [metrics/current-cost/watts]
+</pre>

@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.tensin.ccf.CCFException;
 import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Constants;
@@ -83,10 +84,11 @@ public class MQTTReconnectClient {
      */
     private void connect() {
         connectionInProgress.set(true);
-        final String previousUserDir = System.getProperty("user.dir");
+        // final String previousUserDir = System.getProperty("user.dir");
         try {
-            System.setProperty("user.dir", brokerDataDir);
-            client = new MqttClient(getMqttBrokerDefinition().getBrokerUrl(), clientId);
+            // System.setProperty("user.dir", brokerDataDir);
+            final MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence(brokerDataDir);
+            client = new MqttClient(getMqttBrokerDefinition().getBrokerUrl(), clientId, persistence);
             client.setCallback(new MqttCallback() {
 
                 /**
@@ -125,7 +127,7 @@ public class MQTTReconnectClient {
             LOGGER.error("Can't start MQTT client on broker url [" + getMqttBrokerDefinition().getBrokerUrl() + "]", e);
             connected.set(false);
         } finally {
-            System.setProperty("user.dir", previousUserDir);
+            // System.setProperty("user.dir", previousUserDir);
             connectionInProgress.set(false);
         }
 
@@ -221,7 +223,7 @@ public class MQTTReconnectClient {
             final String hiddenPassword = StringUtils.repeat("*", mqttBrokerDefinition.getBrokerPassword() == null ? 0 : mqttBrokerDefinition
                     .getBrokerPassword().length());
             sb.append(", connection will be authentificated with username [").append(mqttBrokerDefinition.getBrokerUsername()).append("], password [")
-            .append(hiddenPassword).append("]");
+                    .append(hiddenPassword).append("]");
             options.setUserName(mqttBrokerDefinition.getBrokerUsername());
             options.setPassword(mqttBrokerDefinition.getBrokerPassword().toCharArray());
         } else {
@@ -233,7 +235,7 @@ public class MQTTReconnectClient {
 
             /**
              * {@inheritDoc}
-             * 
+             *
              * @see java.lang.Thread#run()
              */
             @Override

@@ -115,7 +115,7 @@ public class CurrentCostForwarder {
     private CCFTimeUnit brokerReconnectTimeout = DEFAULT_BROKER_RECONNECT_TIMEOUT;
 
     /** The start stop timeout. */
-    @Parameter(names = { "--timeout" }, description = "Start/stop timeout. Example values : '30s', '1m', '500ms', ...", required = false)
+    @Parameter(names = { "--timeout" }, description = "Start/stop timeout. Example values : '30s', '1m', '500ms', aso", required = false)
     private CCFTimeUnit startStopTimeout = DEFAULT_START_STOP_TIMEOUT;
 
     /** The reader. */

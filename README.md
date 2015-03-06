@@ -10,10 +10,15 @@ This allows to have :
 
 ![Current Cost Forwarder schema](https://github.com/SR-G/current-cost-forwarder/raw/master/src/site/resources/images/schema-current-cost-forwarder.png)
 
-There are right now two ouput topics, one for temperature and one for watts. Base topic names are customizable, and you may have :
+There are right now two ouput topics, one for temperature and one for watts. Base topic names are customizable. By default you'll have :
 
-- metrics/current-cost/watts
-- metrics/current-cost/temperature
+- /metrics/current-cost/watts
+- /metrics/current-cost/temperature
+
+You can customize the base topic with the ```--broker-topic``` additionnal parameter and use, if you are using multiple IAMs, the ```${id}``` and/or ```${sensor}``` tokens. "watts" and "temperature" are not customizable at this time.
+
+<pre>current-cost-forwarder.sh --broker-topic '/home/cc/${id}'
+</pre>
 
 ## Current Cost EnviR device
 

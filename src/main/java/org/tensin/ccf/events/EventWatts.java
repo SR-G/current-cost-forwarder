@@ -32,6 +32,10 @@ public class EventWatts extends AbstractEvent implements IEvent {
         String result = topicPattern;
         result = replace(result, "${id}", getId());
         result = replace(result, "${sensor}", getSensor());
+        if (!result.endsWith("/")) {
+            result = result + "/";
+        }
+        result = result + subTopic();
         return result;
     }
 

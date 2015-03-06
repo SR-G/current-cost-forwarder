@@ -30,7 +30,7 @@ public class ForwarderConsole implements IForwarder {
      */
     @Override
     public void forward(final IEvent event) throws CCFException {
-        LOGGER.info("Recevied event [" + event.toString() + "]");
+        LOGGER.info("Received event [" + event.toString() + "]");
     }
 
     /**

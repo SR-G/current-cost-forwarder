@@ -88,7 +88,7 @@ public class CurrentCostForwarder {
 
     /** The broker topic. */
     @Parameter(names = { "--broker-topic" }, description = "The broker topic to publish on", required = true)
-    private String brokerTopic;
+    private String brokerTopic = "/metrics/current-cost/";
 
     /** The broker url. */
     @Parameter(names = { "--broker-url" }, description = "The MQTT broker URL to publish on", required = true)

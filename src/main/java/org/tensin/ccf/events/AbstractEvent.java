@@ -14,20 +14,12 @@ public abstract class AbstractEvent {
     private final long timestamp;
 
     /** The sensor. */
+    @BeanField
     private final String sensor;
 
     /** The id. */
+    @BeanField
     private final String id;
-
-    /**
-     * Instantiates a new abstract event.
-     */
-    public AbstractEvent() {
-        super();
-        timestamp = System.currentTimeMillis();
-        sensor = "";
-        id = "";
-    }
 
     /**
      * Instantiates a new abstract event.
@@ -54,10 +46,20 @@ public abstract class AbstractEvent {
         return BeanHelper.equals(this, obj);
     }
 
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Gets the sensor.
+     *
+     * @return the sensor
+     */
     public String getSensor() {
         return sensor;
     }
@@ -94,7 +96,7 @@ public abstract class AbstractEvent {
      */
     protected String replace(final String result, final String key, final String value) {
         if (StringUtils.isNotEmpty(value) && !StringUtils.equals("null", value)) {
-            return StringUtils.replace(result, key, value.toUpperCase());
+            return StringUtils.replace(result, key, value);
         } else {
             return StringUtils.replace(result, key, "");
         }

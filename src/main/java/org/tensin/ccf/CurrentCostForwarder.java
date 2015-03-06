@@ -87,7 +87,7 @@ public class CurrentCostForwarder {
     private String pidFileName = DEFAULT_PID_FILENAME;
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic" }, description = "The broker topic to publish on", required = true)
+    @Parameter(names = { "--broker-topic" }, description = "The broker topic to publish on", required = false)
     private String brokerTopic = "/metrics/current-cost/";
 
     /** The broker url. */

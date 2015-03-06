@@ -20,9 +20,22 @@ public class EventTemperature extends AbstractEvent implements IEvent {
      * @param temperature
      *            the temperature
      */
-    public EventTemperature(final double temperature) {
-        super();
+    public EventTemperature(final String sensor, final String id, final double temperature) {
+        super(sensor, id);
         this.temperature = temperature;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.tensin.ccf.events.IEvent#enhanceTopicWithInternalValues(java.lang.String)
+     */
+    @Override
+    public String enhanceTopicWithInternalValues(final String topicPattern) {
+        String result = topicPattern;
+        result = replace(result, "${id}", getId());
+        result = replace(result, "${sensor}", getSensor());
+        return result;
     }
 
     /**

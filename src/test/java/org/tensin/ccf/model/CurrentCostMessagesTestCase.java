@@ -3,10 +3,6 @@ package org.tensin.ccf.model;
 import java.io.File;
 
 import org.junit.Test;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
-import org.simpleframework.xml.strategy.VisitorStrategy;
 import org.tensin.ccf.CCFException;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
 import org.tensin.ccf.model.message.CurrentCostMessage;
@@ -14,19 +10,7 @@ import org.tensin.ccf.model.message.CurrentCostMessage;
 /**
  * The Class CurrentCostMessagesTestCase.
  */
-public class CurrentCostMessagesTestCase {
-
-    /**
-     * Builds the serializer.
-     *
-     * @return the serializer
-     */
-    private Serializer buildSerializer() {
-        final Strategy strategy = new VisitorStrategy(new CurrentCostVisitor());
-        final Serializer serializer = new Persister(strategy);
-        return serializer;
-
-    }
+public class CurrentCostMessagesTestCase extends AbstractReaderTestCase {
 
     /**
      * Test current cost message.

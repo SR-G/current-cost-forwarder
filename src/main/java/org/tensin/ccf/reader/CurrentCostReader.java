@@ -68,6 +68,30 @@ public class CurrentCostReader extends Thread {
     }
 
     /**
+     * Builds the event temperature.
+     *
+     * @param m
+     *            the m
+     * @return the double
+     */
+    private EventTemperature buildEventTemperature(final CurrentCostMessage m) {
+        final EventTemperature result = new EventTemperature(m.getSensor(), m.getId(), m.getTemperature());
+        return result;
+    }
+
+    /**
+     * Builds the event watts.
+     *
+     * @param m
+     *            the m
+     * @return the event watts
+     */
+    private EventWatts buildEventWatts(final CurrentCostMessage m) {
+        final EventWatts result = new EventWatts(m.getSensor(), m.getId(), m.getChannels().iterator().next().getWatts());
+        return result;
+    }
+
+    /**
      * Decode as hist message.
      *
      * @param xml
@@ -98,8 +122,8 @@ public class CurrentCostReader extends Thread {
         try {
             final CurrentCostMessage m = serializer.read(CurrentCostMessage.class, xml);
             if (m != null) {
-                forwardTemperature(m.getTemperature());
-                forwardWatts(m.getChannels().iterator().next().getWatts());
+                forwardTemperature(buildEventTemperature(m));
+                forwardWatts(buildEventWatts(m));
             }
             return true;
         } catch (Exception e) {
@@ -134,25 +158,25 @@ public class CurrentCostReader extends Thread {
     /**
      * Forward temperature.
      *
-     * @param temperature
-     *            the temperature
+     * @param eventTemperature
+     *            the event temperature
      * @throws CCFException
      *             the CCF exception
      */
-    private void forwardTemperature(final double temperature) throws CCFException {
-        forwarderService.enqueue(new EventTemperature(temperature));
+    private void forwardTemperature(final EventTemperature eventTemperature) throws CCFException {
+        forwarderService.enqueue(eventTemperature);
     }
 
     /**
      * Forward watts.
      *
-     * @param watts
-     *            the watts
+     * @param eventWatts
+     *            the event watts
      * @throws CCFException
      *             the CCF exception
      */
-    private void forwardWatts(final int watts) throws CCFException {
-        forwarderService.enqueue(new EventWatts(watts));
+    private void forwardWatts(final EventWatts eventWatts) throws CCFException {
+        forwarderService.enqueue(eventWatts);
     }
 
     /**

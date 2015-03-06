@@ -38,14 +38,14 @@ public class CurrentCostMessage extends AbstractCurrentCostMessage {
 
     /** The channels. */
     @ElementListUnion({ @ElementList(required = false, inline = true, entry = "ch1", type = CurrentCostChannelCH1.class),
-            @ElementList(required = false, inline = true, entry = "ch2", type = CurrentCostChannelCH2.class),
-            @ElementList(required = false, inline = true, entry = "ch3", type = CurrentCostChannelCH3.class),
-            @ElementList(required = false, inline = true, entry = "ch4", type = CurrentCostChannelCH4.class),
-            @ElementList(required = false, inline = true, entry = "ch5", type = CurrentCostChannelCH5.class),
-            @ElementList(required = false, inline = true, entry = "ch6", type = CurrentCostChannelCH6.class),
-            @ElementList(required = false, inline = true, entry = "ch7", type = CurrentCostChannelCH7.class),
-            @ElementList(required = false, inline = true, entry = "ch8", type = CurrentCostChannelCH8.class),
-            @ElementList(required = false, inline = true, entry = "ch9", type = CurrentCostChannelCH9.class) })
+        @ElementList(required = false, inline = true, entry = "ch2", type = CurrentCostChannelCH2.class),
+        @ElementList(required = false, inline = true, entry = "ch3", type = CurrentCostChannelCH3.class),
+        @ElementList(required = false, inline = true, entry = "ch4", type = CurrentCostChannelCH4.class),
+        @ElementList(required = false, inline = true, entry = "ch5", type = CurrentCostChannelCH5.class),
+        @ElementList(required = false, inline = true, entry = "ch6", type = CurrentCostChannelCH6.class),
+        @ElementList(required = false, inline = true, entry = "ch7", type = CurrentCostChannelCH7.class),
+        @ElementList(required = false, inline = true, entry = "ch8", type = CurrentCostChannelCH8.class),
+        @ElementList(required = false, inline = true, entry = "ch9", type = CurrentCostChannelCH9.class) })
     @BeanField
     private Collection<AbstractCurrentCostChannel> channels = new ArrayList<AbstractCurrentCostChannel>();
 
@@ -134,6 +134,12 @@ public class CurrentCostMessage extends AbstractCurrentCostMessage {
         this.temperature = temperature;
     }
 
+    /**
+     * Sets the type.
+     *
+     * @param type
+     *            the new type
+     */
     public void setType(final int type) {
         this.type = type;
     }

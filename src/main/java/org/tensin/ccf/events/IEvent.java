@@ -6,6 +6,15 @@ package org.tensin.ccf.events;
 public interface IEvent {
 
     /**
+     * Enhance topic with internal values.
+     *
+     * @param topicPattern
+     *            the topic pattern
+     * @return the string
+     */
+    String enhanceTopicWithInternalValues(final String topicPattern);
+
+    /**
      * Format.
      *
      * @return the string

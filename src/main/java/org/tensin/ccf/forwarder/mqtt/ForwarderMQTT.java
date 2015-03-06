@@ -72,9 +72,9 @@ public class ForwarderMQTT implements IForwarder {
      */
     public String buildBrokerTopic(final IEvent event) {
         if (brokerTopic.endsWith("/")) {
-            return brokerTopic + event.subTopic();
+            return event.enhanceTopicWithInternalValues(brokerTopic + "/" + event.subTopic());
         } else {
-            return brokerTopic + "/" + event.subTopic();
+            return event.enhanceTopicWithInternalValues(brokerTopic + "/" + event.subTopic());
         }
     }
 

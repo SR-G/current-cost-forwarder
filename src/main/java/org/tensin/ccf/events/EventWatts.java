@@ -17,9 +17,22 @@ public class EventWatts extends AbstractEvent implements IEvent {
      * @param watts
      *            the watts
      */
-    public EventWatts(final int watts) {
-        super();
+    public EventWatts(final String sensor, final String id, final int watts) {
+        super(sensor, id);
         this.watts = watts;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.tensin.ccf.events.IEvent#enhanceTopicWithInternalValues(java.lang.String)
+     */
+    @Override
+    public String enhanceTopicWithInternalValues(final String topicPattern) {
+        String result = topicPattern;
+        result = replace(result, "${id}", getId());
+        result = replace(result, "${sensor}", getSensor());
+        return result;
     }
 
     /**

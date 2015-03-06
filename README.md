@@ -138,6 +138,13 @@ monit stop current-cost
 monit restart current-cost
 </pre>	
 
+## How to debug MQTT
+
+You can use the mosquitto client to subscribe anywhere to any topic.
+
+<pre>mosquito_sub -h 192.168.8.40 -t /metrics/current-cost/watts
+</pre>
+
 ## How to build (from sources)
 
 Have [Gradle](https://www.gradle.org) installed. Just git clone the repository and build.
@@ -189,8 +196,8 @@ mqtt:mqtt-broker-home.pwd=PASSWORD
 
 #### Items configuration
 
-<pre>Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
-Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"}
+<pre>Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:/metrics/current-cost/watts:state:default]"} 
+Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:/metrics/current-cost/temperature:state:default]"}
 </pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 

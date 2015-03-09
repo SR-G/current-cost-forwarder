@@ -15,9 +15,12 @@ There are right now two ouput topics, one for temperature and one for watts. Bas
 - /metrics/current-cost/watts
 - /metrics/current-cost/temperature
 
-You can customize the base topic with the ```--broker-topic``` additionnal parameter and use, if you are using multiple IAMs, the ```${id}``` and/or ```${sensor}``` tokens. "watts" and "temperature" are not customizable at this time.
+You can customize the base topic with the ```--broker-topic``` additionnal parameter and use, if you are using multiple IAMs, the ```${id}``` and/or ```${sensor}``` and/or ```${channel}```tokens. 
+You may customize more accurately topics with ```--broker-topic-watts``` and ```--broker-topic-temperature``` (those parameters override the base ```--broker-topic```.
 
-<pre>current-cost-forwarder.sh --broker-topic '/home/cc/${id}'
+<pre>current-cost-forwarder.sh --broker-topic '/metrics/current-cost/${id}' // will publish on /metrics/current-cost/000123/watts and /metrics/current-cost/000123/temperature
+current-cost-forwarder.sh --broker-topic-watts '/metrics/current-cost/energy' --broker-topic-temperature '/metrics/current-cost/temp' // will publish on the exact given topics as they are provided as parameters
+current-cost-forwarder.sh --broker-topic-watts '/metrics/current-cost/${channel}/energy' --broker-topic-temperature '/metrics/current-cost/temp' // will split watts under separated channels (thus 1 message from the device will produce 1 temp metric + 1 watts metric per channel) 
 </pre>
 
 ## Current Cost EnviR device
@@ -105,7 +108,9 @@ Options are :
     --broker-data-dir                The MQTT broker data dir (for lock files). Default: /var/tmp/
     --broker-password                The MQTT broker password (if authed)
     --broker-reconnect-timeout       The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso. Default: 5000ms
-  * --broker-topic                   The broker topic to publish on
+    --broker-topic                   The base broker topic to publish on. /watts and /temperature will be added. Default: /metrics/current-cost/
+    --broker-topic-temperature       The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor},${id} and ${channel} tokens are optionals.
+    --broker-topic-watts             The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor},${id} and ${channel} tokens are optionals.
   * --broker-url                     The MQTT broker URL to publish on
     --broker-username                The MQTT broker username (if authed)
     --debug                          Debug mode. Default: false
@@ -140,7 +145,7 @@ monit restart current-cost
 
 ## How to debug MQTT
 
-You can use the mosquitto client to subscribe anywhere to any topic.
+You can use the mosquitto client to subscribe anywhere (ie, from any computer) to any topic.
 
 <pre>mosquito_sub -h 192.168.8.40 -t /metrics/current-cost/watts
 </pre>

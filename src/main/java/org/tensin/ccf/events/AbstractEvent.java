@@ -1,6 +1,6 @@
 package org.tensin.ccf.events;
 
-import org.apache.commons.lang3.StringUtils;
+import org.tensin.ccf.StringHelper;
 import org.tensin.ccf.bean.BeanField;
 import org.tensin.ccf.bean.BeanHelper;
 
@@ -34,6 +34,18 @@ public abstract class AbstractEvent {
         timestamp = System.currentTimeMillis();
         this.sensor = sensor;
         this.id = id;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.tensin.ccf.events.IEvent#enhanceTopicWithInternalValues(java.lang.String)
+     */
+    public String enhanceTopicWithInternalValues(final String brokerTopic) {
+        String result = brokerTopic;
+        result = StringHelper.replace(result, "${id}", getId());
+        result = StringHelper.replace(result, "${sensor}", getSensor());
+        return result;
     }
 
     /**
@@ -81,25 +93,6 @@ public abstract class AbstractEvent {
     @Override
     public int hashCode() {
         return BeanHelper.hashCode(this);
-    }
-
-    /**
-     * Replace.
-     *
-     * @param result
-     *            the result
-     * @param key
-     *            the key
-     * @param value
-     *            the value
-     * @return the string
-     */
-    protected String replace(final String result, final String key, final String value) {
-        if (StringUtils.isNotEmpty(value) && !StringUtils.equals("null", value)) {
-            return StringUtils.replace(result, key, value);
-        } else {
-            return StringUtils.replace(result, key, "");
-        }
     }
 
     /**

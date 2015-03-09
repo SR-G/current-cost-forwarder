@@ -3,6 +3,7 @@ package org.tensin.ccf.reader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
@@ -26,6 +27,7 @@ import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.forwarder.ForwarderService;
 import org.tensin.ccf.model.CurrentCostVisitor;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
+import org.tensin.ccf.model.message.AbstractCurrentCostChannel;
 import org.tensin.ccf.model.message.CurrentCostMessage;
 
 /**
@@ -86,9 +88,15 @@ public class CurrentCostReader extends Thread {
      *            the m
      * @return the event watts
      */
-    private EventWatts buildEventWatts(final CurrentCostMessage m) {
-        final EventWatts result = new EventWatts(m.getSensor(), m.getId(), m.getChannels().iterator().next().getWatts());
-        return result;
+    private Collection<EventWatts> buildEventWatts(final CurrentCostMessage m) {
+        final Collection<EventWatts> results = new ArrayList<EventWatts>();
+        for (final AbstractCurrentCostChannel channel : m.getChannels()) {
+            final int watts = channel.getWatts();
+            final String channelId = channel.getChannel();
+            final EventWatts result = new EventWatts(m.getSensor(), m.getId(), channelId, watts);
+            results.add(result);
+        }
+        return results;
     }
 
     /**
@@ -123,7 +131,9 @@ public class CurrentCostReader extends Thread {
             final CurrentCostMessage m = serializer.read(CurrentCostMessage.class, xml);
             if (m != null) {
                 forwardTemperature(buildEventTemperature(m));
-                forwardWatts(buildEventWatts(m));
+                for (final EventWatts e : buildEventWatts(m)) {
+                    forwardWatts(e);
+                }
             }
             return true;
         } catch (Exception e) {

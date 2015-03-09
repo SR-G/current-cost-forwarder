@@ -14,6 +14,30 @@ public abstract class AbstractCurrentCostChannel extends AbstractCurrentCost {
     @BeanField
     private int watts;
 
+    /** The channel. */
+    @BeanField
+    private String channel;
+
+    /**
+     * Instantiates a new abstract current cost channel.
+     *
+     * @param channel
+     *            the channel
+     */
+    public AbstractCurrentCostChannel(final String channel) {
+        super();
+        this.channel = channel;
+    }
+
+    /**
+     * Gets the channel.
+     *
+     * @return the channel
+     */
+    public String getChannel() {
+        return channel;
+    }
+
     /**
      * Gets the watts.
      *
@@ -21,6 +45,16 @@ public abstract class AbstractCurrentCostChannel extends AbstractCurrentCost {
      */
     public int getWatts() {
         return watts;
+    }
+
+    /**
+     * Sets the channel.
+     *
+     * @param channel
+     *            the new channel
+     */
+    public void setChannel(final String channel) {
+        this.channel = channel;
     }
 
     /**

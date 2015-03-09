@@ -8,4 +8,10 @@ import org.simpleframework.xml.Root;
 @Root(name = "ch8")
 public class CurrentCostChannelCH8 extends AbstractCurrentCostChannel {
 
+    /**
+     * Instantiates a new current cost channel.
+     */
+    public CurrentCostChannelCH8() {
+        super("ch8");
+    }
 }

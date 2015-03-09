@@ -8,6 +8,8 @@ import org.tensin.ccf.CCFException;
 import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Reducer;
 import org.tensin.ccf.bean.BeanField;
+import org.tensin.ccf.events.EventTemperature;
+import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.events.IEvent;
 import org.tensin.ccf.forwarder.IForwarder;
 
@@ -28,11 +30,12 @@ public class ForwarderMQTT implements IForwarder {
      * @param brokerReconnectTimeout
      * @return the forwarder mqtt
      */
-    public static ForwarderMQTT build(final MQTTBrokerDefinition mqttBrokerDefinition, final String brokerTopic, final String brokerDataDir,
-            final CCFTimeUnit brokerReconnectTimeout) {
+    public static ForwarderMQTT build(final MQTTBrokerDefinition mqttBrokerDefinition, final String brokerTopicWatts, final String brokerTopicTemperature,
+            final String brokerDataDir, final CCFTimeUnit brokerReconnectTimeout) {
         final ForwarderMQTT forwarderMQTT = new ForwarderMQTT();
         forwarderMQTT.mqttBrokerDefinition = mqttBrokerDefinition;
-        forwarderMQTT.brokerTopic = brokerTopic;
+        forwarderMQTT.brokerTopicWatts = brokerTopicWatts;
+        forwarderMQTT.brokerTopicTemperature = brokerTopicTemperature;
         forwarderMQTT.brokerDataDir = brokerDataDir;
         forwarderMQTT.brokerReconnectTimeout = brokerReconnectTimeout;
         return forwarderMQTT;
@@ -50,7 +53,7 @@ public class ForwarderMQTT implements IForwarder {
 
     /** The broker topic. */
     @BeanField
-    private String brokerTopic;
+    private String brokerTopicWatts, brokerTopicTemperature;
 
     /** The broker data dir. */
     @BeanField
@@ -69,9 +72,16 @@ public class ForwarderMQTT implements IForwarder {
      * @param event
      *            the event
      * @return the broker topic
+     * @throws CCFException
      */
-    public String buildBrokerTopic(final IEvent event) {
-        return event.enhanceTopicWithInternalValues(brokerTopic);
+    public String buildBrokerTopic(final IEvent event) throws CCFException {
+        if (event instanceof EventTemperature) {
+            return event.enhanceTopicWithInternalValues(brokerTopicTemperature);
+        } else if (event instanceof EventWatts) {
+            return event.enhanceTopicWithInternalValues(brokerTopicWatts);
+        } else {
+            throw new CCFException("Unknown event type [" + event.getClass().getName() + "]");
+        }
     }
 
     /**
@@ -139,7 +149,8 @@ public class ForwarderMQTT implements IForwarder {
      */
     @Override
     public void start() throws CCFException {
-        LOGGER.info("Starting MQTT forwarder with topic base name [" + brokerTopic + "], mqtt broker " + mqttBrokerDefinition.toString());
+        LOGGER.info("Starting MQTT forwarder with topic [" + brokerTopicWatts + "] for watts and [" + brokerTopicTemperature
+                + "] for temperatures, mqtt broker " + mqttBrokerDefinition.toString());
         client = MQTTReconnectClient.build(mqttBrokerDefinition, MqttClient.generateClientId(), brokerReconnectTimeout, brokerDataDir);
         client.start();
     }

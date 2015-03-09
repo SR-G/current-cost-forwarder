@@ -28,23 +28,6 @@ public class EventTemperature extends AbstractEvent implements IEvent {
     /**
      * {@inheritDoc}
      *
-     * @see org.tensin.ccf.events.IEvent#enhanceTopicWithInternalValues(java.lang.String)
-     */
-    @Override
-    public String enhanceTopicWithInternalValues(final String topicPattern) {
-        String result = topicPattern;
-        result = replace(result, "${id}", getId());
-        result = replace(result, "${sensor}", getSensor());
-        if (!result.endsWith("/")) {
-            result = result + "/";
-        }
-        result = result + subTopic();
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @see org.tensin.ccf.events.IEvent#format()
      */
     @Override
@@ -69,15 +52,5 @@ public class EventTemperature extends AbstractEvent implements IEvent {
      */
     public void setTemperature(final double temperature) {
         this.temperature = temperature;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.tensin.ccf.events.IEvent#subTopic()
-     */
-    @Override
-    public String subTopic() {
-        return "temperature";
     }
 }

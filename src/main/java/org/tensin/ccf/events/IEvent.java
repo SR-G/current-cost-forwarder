@@ -10,9 +10,10 @@ public interface IEvent {
      *
      * @param topicPattern
      *            the topic pattern
+     * @param brokerTopicTemperature
      * @return the string
      */
-    String enhanceTopicWithInternalValues(final String topicPattern);
+    String enhanceTopicWithInternalValues(final String brokerTopic);
 
     /**
      * Format.
@@ -20,11 +21,4 @@ public interface IEvent {
      * @return the string
      */
     String format();
-
-    /**
-     * Sub topic.
-     *
-     * @return the string
-     */
-    String subTopic();
 }

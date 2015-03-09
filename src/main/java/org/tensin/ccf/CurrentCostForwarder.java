@@ -87,8 +87,16 @@ public class CurrentCostForwarder {
     private String pidFileName = DEFAULT_PID_FILENAME;
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic" }, description = "The broker topic to publish on", required = false)
+    @Parameter(names = { "--broker-topic" }, description = "The base broker topic to publish on. /watts and /temperature will be added", required = false)
     private String brokerTopic = "/metrics/current-cost/";
+
+    /** The broker topic. */
+    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor},${id} and ${channel} tokens are optionals.", required = false)
+    private String brokerTopicWatts;
+
+    /** The broker topic. */
+    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor},${id} and ${channel} tokens are optionals.", required = false)
+    private String brokerTopicTemperature;
 
     /** The broker url. */
     @Parameter(names = { "--broker-url" }, description = "The MQTT broker URL to publish on", required = true)
@@ -146,8 +154,43 @@ public class CurrentCostForwarder {
         mqttBrokerDefinition.setBrokerUrl(getBrokerUrl());
         mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
 
-        forwarders.add(ForwarderMQTT.build(mqttBrokerDefinition, brokerTopic, brokerDataDir, brokerReconnectTimeout));
+        forwarders
+                .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
         forwarderService = ForwarderService.build(forwarders);
+    }
+
+    /**
+     * Builds the broker topic temperature.
+     *
+     * @return the string
+     */
+    private String buildBrokerTopicTemperature() {
+        if (StringUtils.isNotEmpty(brokerTopicTemperature)) {
+            return brokerTopicTemperature;
+        } else {
+            if (brokerTopic.endsWith("/")) {
+                return brokerTopic + "temperature";
+            } else {
+                return brokerTopic + "/temperature";
+            }
+        }
+    }
+
+    /**
+     * Builds the broker topic watts.
+     *
+     * @return the string
+     */
+    private String buildBrokerTopicWatts() {
+        if (StringUtils.isNotEmpty(brokerTopicWatts)) {
+            return brokerTopicWatts;
+        } else {
+            if (brokerTopic.endsWith("/")) {
+                return brokerTopic + "watts";
+            } else {
+                return brokerTopic + "/watts";
+            }
+        }
     }
 
     /**
@@ -184,6 +227,24 @@ public class CurrentCostForwarder {
      */
     public String getBrokerTopic() {
         return brokerTopic;
+    }
+
+    /**
+     * Gets the broker topic temperature.
+     *
+     * @return the broker topic temperature
+     */
+    public String getBrokerTopicTemperature() {
+        return brokerTopicTemperature;
+    }
+
+    /**
+     * Gets the broker topic watts.
+     *
+     * @return the broker topic watts
+     */
+    public String getBrokerTopicWatts() {
+        return brokerTopicWatts;
     }
 
     /**
@@ -364,6 +425,26 @@ public class CurrentCostForwarder {
      */
     public void setBrokerTopic(final String brokerTopic) {
         this.brokerTopic = brokerTopic;
+    }
+
+    /**
+     * Sets the broker topic temperature.
+     *
+     * @param brokerTopicTemperature
+     *            the new broker topic temperature
+     */
+    public void setBrokerTopicTemperature(final String brokerTopicTemperature) {
+        this.brokerTopicTemperature = brokerTopicTemperature;
+    }
+
+    /**
+     * Sets the broker topic watts.
+     *
+     * @param brokerTopicWatts
+     *            the new broker topic watts
+     */
+    public void setBrokerTopicWatts(final String brokerTopicWatts) {
+        this.brokerTopicWatts = brokerTopicWatts;
     }
 
     /**

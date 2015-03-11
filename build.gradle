@@ -98,7 +98,7 @@ eclipse.jdt.file.beforeMerged { jdt ->
 
 task eclipseSettings(type: Copy) {
 	println("Restoring UI prefs")
-	from rootProject.files(".eclipse/org.eclipse.jdt.ui.prefs")
+    from rootProject.files(".eclipse/org.eclipse.jdt.ui.prefs", ".eclipse/org.eclipse.core.resources.prefs", ".eclipse/org.eclipse.core.runtime.prefs")
 	into project.file('.settings/')
 	outputs.upToDateWhen { false }
 }

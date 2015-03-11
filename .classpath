@@ -77,11 +77,7 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-jul/2.1/5db7cb177a6a70159205d169d300ec237182efc6/log4j-jul-2.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar" exported="true">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/941a8be4506c65f0a9001c08812fb7da1e505e21/junit-4.12-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry sourcepath="C:/Program Files/Eclipse_DEV/Integration/maven/repository/junit/junit/4.11/junit-4.11-sources.jar" kind="lib" path="C:/Program Files/Eclipse_DEV/Integration/maven/repository/junit/junit/4.11/junit-4.11.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/46f703fb4266140c544d48a189cb25947eb6333e/mockito-core-1.9.5-sources.jar" kind="lib" path="C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/c3264abeea62c4d2f367e21484fbb40c7e256393/mockito-core-1.9.5.jar" exported="true">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/u248663/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/1.9.5/982f4a74cbff61f56c0868b2fdf71fe63b646794/mockito-core-1.9.5-javadoc.jar!/"/>

@@ -16,8 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
-import org.simpleframework.xml.strategy.VisitorStrategy;
 import org.tensin.ccf.CCFException;
 import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Constants;
@@ -25,7 +23,6 @@ import org.tensin.ccf.TimeHelper;
 import org.tensin.ccf.events.EventTemperature;
 import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.forwarder.ForwarderService;
-import org.tensin.ccf.model.CurrentCostVisitor;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
 import org.tensin.ccf.model.message.AbstractCurrentCostChannel;
 import org.tensin.ccf.model.message.CurrentCostMessage;
@@ -402,8 +399,8 @@ public class CurrentCostReader extends Thread {
         // final ByteOrder byteOrder = java.nio.ByteOrder.nativeOrder();
         // LOGGER.info("Detected Byte Order [" + byteOrder.toString() + "]");
 
-        final Strategy strategy = new VisitorStrategy(new CurrentCostVisitor());
-        serializer = new Persister(strategy);
+        // final Strategy strategy = new VisitorStrategy(new CurrentCostVisitor());
+        serializer = new Persister();
 
         LOGGER.info("Starting CurrentCostForwarder reader thread on device [" + deviceName + "]");
         active = true;

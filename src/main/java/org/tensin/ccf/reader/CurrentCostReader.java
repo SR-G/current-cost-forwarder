@@ -309,7 +309,7 @@ public class CurrentCostReader extends Thread {
             int r;
             StringBuilder sb = new StringBuilder();
             while ((r = fis.read()) != -1) {
-                LOGGER.debug("Received character [" + (char) r + "] (" + r + ")");
+                LOGGER.trace("Received character [" + (char) r + "] (" + r + ")");
                 if (isTrameEnded(r, sb)) {
                     process(sb.toString());
                     sb = new StringBuilder();

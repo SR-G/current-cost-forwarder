@@ -38,11 +38,20 @@ public class LogInitializer {
      * @param debug
      *            the new debug
      */
-    public static void setDebug(final boolean debug) {
-        if (debug) {
-            changeLoggerLevel("org.tensin", Level.DEBUG);
-        } else {
+    public static void setDebug(final int level) {
+        switch (level) {
+        case 0:
+            changeLoggerLevel("org.tensin", Level.OFF);
+            break;
+        case 1:
             changeLoggerLevel("org.tensin", Level.INFO);
+            break;
+        case 2:
+            changeLoggerLevel("org.tensin", Level.DEBUG);
+            break;
+        case 3:
+            changeLoggerLevel("org.tensin", Level.TRACE);
+            break;
         }
     }
 }

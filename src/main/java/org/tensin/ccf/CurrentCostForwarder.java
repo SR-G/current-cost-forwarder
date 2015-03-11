@@ -71,8 +71,12 @@ public class CurrentCostForwarder {
     private final CCFTimeUnit deviceReconnectTimeout = CurrentCostReader.DEFAULT_DEVICE_RECONNECTION_TIMEOUT;
 
     /** The debug. */
-    @Parameter(names = "--debug", description = "Debug mode", required = false)
-    private boolean debug;
+    @Parameter(names = "--debug", description = "Debug mode. 0 = no log, 1 (default) = INFO, 2 = DEBUG, 3 = TRACE ", required = false)
+    private int debug = 1;
+
+    /** The console forwarder activated. */
+    @Parameter(names = "--activate-console-forwarder", description = "Activate an additionnal console forwarder : everything that will be published on MQTT topics will too be sent to the console (for debug purposes)", required = false)
+    private boolean consoleForwarderActivated;
 
     /** The usage. */
     @Parameter(names = { "-h", "--usage", "--help" }, description = "Shows available commands", required = false)
@@ -91,11 +95,11 @@ public class CurrentCostForwarder {
     private String brokerTopic = "/metrics/current-cost/";
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor},${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
     private String brokerTopicWatts;
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor},${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
     private String brokerTopicTemperature;
 
     /** The broker url. */
@@ -144,7 +148,7 @@ public class CurrentCostForwarder {
     private void activateForwarders() throws CCFException {
         final Collection<IForwarder> forwarders = new ArrayList<IForwarder>();
 
-        if (isDebug()) {
+        if (isConsoleForwarderActivated()) {
             forwarders.add(ForwarderConsole.build());
         }
 
@@ -155,7 +159,7 @@ public class CurrentCostForwarder {
         mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
 
         forwarders
-                .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
+        .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
         forwarderService = ForwarderService.build(forwarders);
     }
 
@@ -266,6 +270,15 @@ public class CurrentCostForwarder {
     }
 
     /**
+     * Gets the debug.
+     *
+     * @return the debug
+     */
+    public int getDebug() {
+        return debug;
+    }
+
+    /**
      * Gets the device name.
      *
      * @return the device name
@@ -342,12 +355,12 @@ public class CurrentCostForwarder {
     }
 
     /**
-     * Checks if is debug.
+     * Checks if is console forwarder activated.
      *
-     * @return true, if is debug
+     * @return true, if is console forwarder activated
      */
-    public boolean isDebug() {
-        return debug;
+    public boolean isConsoleForwarderActivated() {
+        return consoleForwarderActivated;
     }
 
     /**
@@ -371,8 +384,8 @@ public class CurrentCostForwarder {
         if (usage) {
             usage(jCommander);
         }
-        if (debug) {
-            LOGGER.info("Debug activated");
+        if (debug > 1) {
+            LOGGER.info("Debug level [" + debug + "] activated");
         }
         return jCommander;
     }
@@ -468,12 +481,22 @@ public class CurrentCostForwarder {
     }
 
     /**
+     * Sets the console forwarder activated.
+     *
+     * @param consoleForwarderActivated
+     *            the new console forwarder activated
+     */
+    public void setConsoleForwarderActivated(final boolean consoleForwarderActivated) {
+        this.consoleForwarderActivated = consoleForwarderActivated;
+    }
+
+    /**
      * Sets the debug.
      *
      * @param debug
      *            the new debug
      */
-    public void setDebug(final boolean debug) {
+    public void setDebug(final int debug) {
         this.debug = debug;
     }
 

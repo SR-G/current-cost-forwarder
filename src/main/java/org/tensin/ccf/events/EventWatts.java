@@ -1,12 +1,13 @@
 package org.tensin.ccf.events;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tensin.ccf.StringHelper;
 import org.tensin.ccf.bean.BeanField;
 
 /**
  * The Class Event.
  */
-public class EventWatts extends AbstractEvent implements IEvent {
+public class EventWatts extends AbstractIDEvent implements IEvent {
 
     /** The watts. */
     @BeanField
@@ -29,15 +30,15 @@ public class EventWatts extends AbstractEvent implements IEvent {
      *            the watts
      */
     public EventWatts(final String sensor, final String id, final String channel, final int watts) {
-        super(sensor, id);
+        super(StringUtils.trim(sensor), StringUtils.trim(id));
         this.watts = watts;
-        this.channel = channel;
+        this.channel = StringUtils.trim(channel);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @see org.tensin.ccf.events.AbstractEvent#enhanceTopicWithInternalValues(java.lang.String)
+     * @see org.tensin.ccf.events.AbstractSensorEvent#enhanceTopicWithInternalValues(java.lang.String)
      */
     @Override
     public String enhanceTopicWithInternalValues(final String brokerTopic) {

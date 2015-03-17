@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.tensin.ccf.CCFException;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
 import org.tensin.ccf.model.message.CurrentCostMessage;
+import org.tensin.ccf.reader.CurrentCostReader;
 
 /**
  * The Class CurrentCostMessagesTestCase.
@@ -21,7 +22,8 @@ public class CurrentCostMessagesTestCase extends AbstractReaderTestCase {
     @Test
     public void testCurrentCostMessage() throws CCFException {
         try {
-            final CurrentCostMessage m = buildSerializer().read(CurrentCostMessage.class, new File("src/test/java/org/tensin/ccf/model/message-raw.xml"));
+            final CurrentCostMessage m = CurrentCostReader.buildSerializer().read(CurrentCostMessage.class,
+                    new File("src/test/java/org/tensin/ccf/model/message-raw.xml"));
             System.out.println(m.toString());
         } catch (Exception e) {
             throw new CCFException(e);
@@ -37,8 +39,8 @@ public class CurrentCostMessagesTestCase extends AbstractReaderTestCase {
     @Test
     public void testCurrentCostMessageHistory() throws CCFException {
         try {
-            final CurrentCostHistoryMessage m = buildSerializer().read(CurrentCostHistoryMessage.class,
-                    new File("src/test/java/org/tensin/ccf/model/message-hist.xml"));
+            final CurrentCostHistoryMessage m = CurrentCostReader.buildSerializer().read(CurrentCostHistoryMessage.class,
+                    new File("src/test/java/org/tensin/ccf/model/message-hist-monthly.xml"));
             System.out.println(m.toString());
         } catch (Exception e) {
             throw new CCFException(e);
@@ -54,7 +56,7 @@ public class CurrentCostMessagesTestCase extends AbstractReaderTestCase {
     @Test
     public void testCurrentCostMessageMultipleChannels() throws CCFException {
         try {
-            final CurrentCostMessage m = buildSerializer().read(CurrentCostMessage.class,
+            final CurrentCostMessage m = CurrentCostReader.buildSerializer().read(CurrentCostMessage.class,
                     new File("src/test/java/org/tensin/ccf/model/message-raw-multiple-channels.xml"));
             System.out.println(m.toString());
         } catch (Exception e) {

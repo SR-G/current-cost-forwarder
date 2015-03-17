@@ -103,7 +103,8 @@ unzip -o current-cost-forwarder-1.0.0.zip
 
 Options are : 
 
-<pre>Usage: <main class> [options]
+<pre>17:47:56.575 [THREAD-CURRENT-COST-FORWARDER-MAIN] ERROR org.tensin.ccf.CurrentCostForwarder - The following option is required:     --broker-url 
+Usage: <main class> [options]
   Options:
     --activate-console-forwarder       Activate an additionnal console forwarder : everything that will be published on MQTT topics will too be sent to the console (for debug purposes). Default: false
     --broker-auth                      Is the broker auth (true|false). Default: false
@@ -111,8 +112,9 @@ Options are :
     --broker-password                  The MQTT broker password (if authed)
     --broker-reconnect-timeout         The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso. Default: 5000ms
     --broker-topic                     The base broker topic to publish on. /watts and /temperature will be added. Default: metrics/current-cost/
-    --broker-topic-temperature         The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.
-    --broker-topic-watts               The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.
+    --broker-topic-history             The broker topic to publish on for hsitory. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/history. ${sensor}, ${seed} (e.g., '538' in <m538> or '001' in <d001>) and ${type} (e.g., hourly, daily, monthly) are optional.
+    --broker-topic-temperature         The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optional.
+    --broker-topic-watts               The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optional.
   * --broker-url                       The MQTT broker URL to publish on
     --broker-username                  The MQTT broker username (if authed)
     --debug                            Debug mode. 0 = no log, 1 (default) = INFO, 2 = DEBUG, 3 = TRACE. Default: 1
@@ -120,7 +122,7 @@ Options are :
     --device-reconnect-timeout         When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. Example values : '2s', '500ms', aso. Default: 2000ms
     --pid                              The PID filename. Default is current directory, file current-cost-forwarder.pid. Default: current-cost-forwarder.pid
     --timeout                          Start/stop timeout. Example values : '30s', '1m', '500ms', aso. Default: 60000ms
-    -h, --usage, --help                Shows available commands. Default: true
+    -h, --usage, --help                Shows available commands. Default: false
 </pre>
 
 By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, aso (the first one will be used). You have to change the device name (through the --device parameter) if you have several USB devices.
@@ -242,7 +244,7 @@ In your configuration/sitemap/ sitemap file, add something like :
 
 ### Changing log levels
 
-In addition to the --debug parameter, you can override the log level definitions of the forwarder with your own log4j2.xml.
+In addition to the ```--debug``` parameter, you can override the log level definitions of the forwarder with your own log4j2.xml.
 
 Place this file (for example) in the home directory and in the .sh set the property log4j.configurationFile, e.g. : 
 

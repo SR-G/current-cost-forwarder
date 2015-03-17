@@ -8,6 +8,7 @@ import org.tensin.ccf.CCFException;
 import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.model.message.AbstractCurrentCostChannel;
 import org.tensin.ccf.model.message.CurrentCostMessage;
+import org.tensin.ccf.reader.CurrentCostReader;
 
 /**
  * The Class DestTopicNameTestCase.
@@ -23,7 +24,8 @@ public class DestTopicNameTestCase extends AbstractReaderTestCase {
     @Test
     public void testTopicNameRawMessage() throws CCFException {
         try {
-            final CurrentCostMessage m = buildSerializer().read(CurrentCostMessage.class, new File("src/test/java/org/tensin/ccf/model/message-raw.xml"));
+            final CurrentCostMessage m = CurrentCostReader.buildSerializer().read(CurrentCostMessage.class,
+                    new File("src/test/java/org/tensin/ccf/model/message-raw.xml"));
             final AbstractCurrentCostChannel channel = m.getChannels().iterator().next();
             final EventWatts w = new EventWatts(m.getSensor(), m.getId(), channel.getChannel(), channel.getWatts());
             Assert.assertEquals("metrics/current-cost/0/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${sensor}/watts"));
@@ -44,7 +46,7 @@ public class DestTopicNameTestCase extends AbstractReaderTestCase {
     @Test
     public void testTopicNameRawMultipleChannelsMessage() throws CCFException {
         try {
-            final CurrentCostMessage m = buildSerializer().read(CurrentCostMessage.class,
+            final CurrentCostMessage m = CurrentCostReader.buildSerializer().read(CurrentCostMessage.class,
                     new File("src/test/java/org/tensin/ccf/model/message-raw-multiple-channels.xml"));
             int i = 1;
             for (final AbstractCurrentCostChannel channel : m.getChannels()) {

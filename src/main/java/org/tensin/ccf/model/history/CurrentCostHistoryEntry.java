@@ -12,7 +12,7 @@ import org.tensin.ccf.model.AbstractCurrentCost;
 /**
  * The Class CurrentCostHistory.
  */
-@Root(name = "hist", strict = false)
+@Root(name = "hist", strict = true)
 public class CurrentCostHistoryEntry extends AbstractCurrentCost {
 
     /** The type. */
@@ -31,7 +31,7 @@ public class CurrentCostHistoryEntry extends AbstractCurrentCost {
     private String units;
 
     /** The data. */
-    @ElementList(required = false, name = "data", inline = true)
+    @ElementList(required = false, inline = true, entry = "data")
     @BeanField
     private Collection<CurrentCostHistoryData> data = new ArrayList<CurrentCostHistoryData>();
 

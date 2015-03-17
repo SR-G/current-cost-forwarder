@@ -19,7 +19,7 @@ public class JCommanderUsage {
 
     private final JCommander jc;
 
-    private int m_columnSize = 256;
+    private int m_columnSize = 320;
 
     private Comparator<? super ParameterDescription> m_parameterDescriptionComparator = new Comparator<ParameterDescription>() {
         @Override
@@ -211,7 +211,7 @@ public class JCommanderUsage {
             Object def = pd.getDefault();
             if (pd.isDynamicParameter()) {
                 out.append("\n").append(s(indentCount + 1)).append("Syntax: ").append(parameter.names()[0]).append("key").append(parameter.getAssignment())
-                        .append("value");
+                .append("value");
             }
             if (def != null) {
                 String displayedDef = Strings.isStringEmpty(def.toString()) ? "<empty string>" : def.toString();

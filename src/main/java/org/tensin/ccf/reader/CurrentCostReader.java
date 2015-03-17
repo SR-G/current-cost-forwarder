@@ -15,15 +15,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.Registry;
+import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
 import org.tensin.ccf.CCFException;
 import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Constants;
 import org.tensin.ccf.TimeHelper;
+import org.tensin.ccf.events.EventHistory;
 import org.tensin.ccf.events.EventTemperature;
 import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.forwarder.ForwarderService;
+import org.tensin.ccf.model.history.CurrentCostHistoryData;
+import org.tensin.ccf.model.history.CurrentCostHistoryDataConverter;
 import org.tensin.ccf.model.history.CurrentCostHistoryMessage;
+import org.tensin.ccf.model.history.ICurrentCostHistoryItem;
 import org.tensin.ccf.model.message.AbstractCurrentCostChannel;
 import org.tensin.ccf.model.message.CurrentCostMessage;
 
@@ -31,6 +38,53 @@ import org.tensin.ccf.model.message.CurrentCostMessage;
  * The Class CurrentCostReader.
  */
 public class CurrentCostReader extends Thread {
+
+    /**
+     * Builds the.
+     *
+     * @param forwarderService
+     *            the forwarder service
+     * @param deviceName
+     *            the device name
+     * @param deviceReconnectTimeout
+     *            the device reconnect timeout
+     * @return the current cost reader
+     * @throws CCFException
+     *             the CCF exception
+     */
+    public static CurrentCostReader build(final ForwarderService forwarderService, String deviceName, final CCFTimeUnit deviceReconnectTimeout)
+            throws CCFException {
+        final CurrentCostReader reader = new CurrentCostReader(forwarderService);
+        if (StringUtils.isEmpty(deviceName)) {
+            deviceName = reader.detectDevice();
+        } else {
+            LOGGER.info("Using provided device name [" + deviceName + "]");
+        }
+        reader.deviceName = deviceName;
+        reader.reconnectionTimeout = deviceReconnectTimeout;
+        reader.serializer = buildSerializer();
+        return reader;
+    }
+
+    /**
+     * Builds the serializer.
+     *
+     * @return the serializer
+     * @throws CCFException
+     *             the CCF exception
+     */
+    public static Serializer buildSerializer() throws CCFException {
+        try {
+            final Registry registry = new Registry();
+            final Strategy strategy = new RegistryStrategy(registry);
+            registry.bind(CurrentCostHistoryData.class, CurrentCostHistoryDataConverter.class);
+
+            final Serializer serializer = new Persister(strategy);
+            return serializer;
+        } catch (Exception e) {
+            throw new CCFException("Can't build serializer", e);
+        }
+    }
 
     /** Logger. */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -62,8 +116,29 @@ public class CurrentCostReader extends Thread {
      * @param forwarderService
      *            the forwarders
      */
-    public CurrentCostReader(final ForwarderService forwarderService) {
+    private CurrentCostReader(final ForwarderService forwarderService) {
         this.forwarderService = forwarderService;
+    }
+
+    /**
+     * Builds the event history.
+     *
+     * @param m
+     *            the m
+     * @return the collection
+     */
+    public Collection<EventHistory> buildEventHistory(final CurrentCostHistoryMessage m) {
+        final Collection<EventHistory> results = new ArrayList<EventHistory>();
+        for (final CurrentCostHistoryData data : m.getHistory().getData()) {
+            // At this time we only forward the first (most recent) value
+            for (final ICurrentCostHistoryItem current : data.getItems()) {
+                if (current.isNotEmpty()) {
+                    final EventHistory e = new EventHistory(data.getSensor(), current.getType(), current.getSeed(), current.getValue());
+                    results.add(e);
+                }
+            }
+        }
+        return results;
     }
 
     /**
@@ -73,7 +148,7 @@ public class CurrentCostReader extends Thread {
      *            the m
      * @return the double
      */
-    private EventTemperature buildEventTemperature(final CurrentCostMessage m) {
+    public EventTemperature buildEventTemperature(final CurrentCostMessage m) {
         final EventTemperature result = new EventTemperature(m.getSensor(), m.getId(), m.getTemperature());
         return result;
     }
@@ -85,7 +160,7 @@ public class CurrentCostReader extends Thread {
      *            the m
      * @return the event watts
      */
-    private Collection<EventWatts> buildEventWatts(final CurrentCostMessage m) {
+    public Collection<EventWatts> buildEventWatts(final CurrentCostMessage m) {
         final Collection<EventWatts> results = new ArrayList<EventWatts>();
         for (final AbstractCurrentCostChannel channel : m.getChannels()) {
             final int watts = channel.getWatts();
@@ -107,11 +182,13 @@ public class CurrentCostReader extends Thread {
         try {
             final CurrentCostHistoryMessage m = serializer.read(CurrentCostHistoryMessage.class, xml);
             if (m != null) {
-                // Nothing to do for the now
+                for (final EventHistory h : buildEventHistory(m)) {
+                    forwardHistory(h);
+                }
             }
             return true;
         } catch (Exception e) {
-            LOGGER.debug("Can't deserialize xml as hist message [" + xml + "]");
+            LOGGER.debug("Can't deserialize xml as hist message [" + xml + "] : " + e.getMessage());
             return false;
         }
     }
@@ -134,7 +211,7 @@ public class CurrentCostReader extends Thread {
             }
             return true;
         } catch (Exception e) {
-            LOGGER.debug("Can't deserialize xml as raw message [" + xml + "]");
+            LOGGER.debug("Can't deserialize xml as raw message [" + xml + "] : " + e.getMessage());
             return false;
         }
     }
@@ -160,6 +237,18 @@ public class CurrentCostReader extends Thread {
         }
         LOGGER.info("No auto-detect current cost device, will use default name [" + Constants.DEFAULT_DEVICE_NAME + "]");
         return Constants.DEFAULT_DEVICE_NAME;
+    }
+
+    /**
+     * Forward history.
+     *
+     * @param eventHistory
+     *            the event history
+     * @throws CCFException
+     *             the CCF exception
+     */
+    private void forwardHistory(final EventHistory eventHistory) throws CCFException {
+        forwarderService.enqueue(eventHistory);
     }
 
     /**
@@ -358,33 +447,10 @@ public class CurrentCostReader extends Thread {
     }
 
     /**
-     * Sets the active.
-     *
-     * @param active
-     *            the new active
+     * Shutdown.
      */
-    public void setActive(final boolean active) {
-        this.active = active;
-    }
-
-    /**
-     * Sets the device name.
-     *
-     * @param deviceName
-     *            the new device name
-     */
-    public void setDeviceName(final String deviceName) {
-        this.deviceName = deviceName;
-    }
-
-    /**
-     * Sets the reconnection timeout.
-     *
-     * @param reconnectionTimeout
-     *            the new reconnection timeout
-     */
-    public void setReconnectionTimeout(final CCFTimeUnit reconnectionTimeout) {
-        this.reconnectionTimeout = reconnectionTimeout;
+    public void shutdown() {
+        active = false;
     }
 
     /**
@@ -398,9 +464,6 @@ public class CurrentCostReader extends Thread {
 
         // final ByteOrder byteOrder = java.nio.ByteOrder.nativeOrder();
         // LOGGER.info("Detected Byte Order [" + byteOrder.toString() + "]");
-
-        // final Strategy strategy = new VisitorStrategy(new CurrentCostVisitor());
-        serializer = new Persister();
 
         LOGGER.info("Starting CurrentCostForwarder reader thread on device [" + deviceName + "]");
         active = true;

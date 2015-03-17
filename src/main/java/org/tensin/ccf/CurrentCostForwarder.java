@@ -33,6 +33,23 @@ import com.google.common.util.concurrent.ServiceManager;
 public class CurrentCostForwarder {
 
     /**
+     * Builds the topic name.
+     *
+     * @param baseTopic
+     *            the base topic
+     * @param addon
+     *            the addon
+     * @return the string
+     */
+    private static String buildTopicName(final String baseTopic, final String addon) {
+        if (baseTopic.endsWith("/")) {
+            return baseTopic + addon;
+        } else {
+            return baseTopic + "/" + addon;
+        }
+    }
+
+    /**
      * The main method.
      *
      * @param args
@@ -95,12 +112,16 @@ public class CurrentCostForwarder {
     private String brokerTopic = "metrics/current-cost/";
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optional.", required = false)
     private String brokerTopicWatts;
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optional.", required = false)
     private String brokerTopicTemperature;
+
+    /** The broker topic history. */
+    @Parameter(names = { "--broker-topic-history" }, description = "The broker topic to publish on for hsitory. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/history. ${sensor}, ${seed} (e.g., '538' in <m538> or '001' in <d001>) and ${type} (e.g., hourly, daily, monthly) are optional.", required = false)
+    private String brokerTopicHistory;
 
     /** The broker url. */
     @Parameter(names = { "--broker-url" }, description = "The MQTT broker URL to publish on", required = true)
@@ -158,9 +179,22 @@ public class CurrentCostForwarder {
         mqttBrokerDefinition.setBrokerUrl(getBrokerUrl());
         mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
 
-        forwarders
-                .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
+        forwarders.add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), buildBrokerTopicHistory(),
+                brokerDataDir, brokerReconnectTimeout));
         forwarderService = ForwarderService.build(forwarders);
+    }
+
+    /**
+     * Builds the broker topic history.
+     *
+     * @return the string
+     */
+    private String buildBrokerTopicHistory() {
+        if (StringUtils.isNotEmpty(brokerTopicHistory)) {
+            return brokerTopicHistory;
+        } else {
+            return buildTopicName(brokerTopic, "history");
+        }
     }
 
     /**
@@ -172,11 +206,7 @@ public class CurrentCostForwarder {
         if (StringUtils.isNotEmpty(brokerTopicTemperature)) {
             return brokerTopicTemperature;
         } else {
-            if (brokerTopic.endsWith("/")) {
-                return brokerTopic + "temperature";
-            } else {
-                return brokerTopic + "/temperature";
-            }
+            return buildTopicName(brokerTopic, "temperature");
         }
     }
 
@@ -189,11 +219,7 @@ public class CurrentCostForwarder {
         if (StringUtils.isNotEmpty(brokerTopicWatts)) {
             return brokerTopicWatts;
         } else {
-            if (brokerTopic.endsWith("/")) {
-                return brokerTopic + "watts";
-            } else {
-                return brokerTopic + "/watts";
-            }
+            return buildTopicName(brokerTopic, "watts");
         }
     }
 
@@ -231,6 +257,15 @@ public class CurrentCostForwarder {
      */
     public String getBrokerTopic() {
         return brokerTopic;
+    }
+
+    /**
+     * Gets the broker topic history.
+     *
+     * @return the broker topic history
+     */
+    public String getBrokerTopicHistory() {
+        return brokerTopicHistory;
     }
 
     /**
@@ -441,6 +476,16 @@ public class CurrentCostForwarder {
     }
 
     /**
+     * Sets the broker topic history.
+     *
+     * @param brokerTopicHistory
+     *            the new broker topic history
+     */
+    public void setBrokerTopicHistory(final String brokerTopicHistory) {
+        this.brokerTopicHistory = brokerTopicHistory;
+    }
+
+    /**
      * Sets the broker topic temperature.
      *
      * @param brokerTopicTemperature
@@ -554,14 +599,7 @@ public class CurrentCostForwarder {
      */
     private void startReader() throws CCFException {
         LOGGER.info("Now starting reader");
-        reader = new CurrentCostReader(forwarderService);
-        if (StringUtils.isEmpty(deviceName)) {
-            deviceName = reader.detectDevice();
-        } else {
-            LOGGER.info("Using provided device name [" + deviceName + "]");
-        }
-        reader.setDeviceName(deviceName);
-        reader.setReconnectionTimeout(deviceReconnectTimeout);
+        reader = CurrentCostReader.build(forwarderService, deviceName, deviceReconnectTimeout);
         reader.start();
     }
 
@@ -598,7 +636,7 @@ public class CurrentCostForwarder {
      */
     private void stopReader() {
         if (reader != null) {
-            reader.setActive(false);
+            reader.shutdown();
         }
     }
 

@@ -8,7 +8,7 @@ import org.tensin.ccf.bean.BeanField;
 /**
  * The Class Event.
  */
-public class EventTemperature extends AbstractEvent implements IEvent {
+public class EventTemperature extends AbstractIDEvent implements IEvent {
 
     /** The watts. */
     @BeanField

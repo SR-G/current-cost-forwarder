@@ -8,6 +8,7 @@ import org.tensin.ccf.CCFException;
 import org.tensin.ccf.CCFTimeUnit;
 import org.tensin.ccf.Reducer;
 import org.tensin.ccf.bean.BeanField;
+import org.tensin.ccf.events.EventHistory;
 import org.tensin.ccf.events.EventTemperature;
 import org.tensin.ccf.events.EventWatts;
 import org.tensin.ccf.events.IEvent;
@@ -31,11 +32,12 @@ public class ForwarderMQTT implements IForwarder {
      * @return the forwarder mqtt
      */
     public static ForwarderMQTT build(final MQTTBrokerDefinition mqttBrokerDefinition, final String brokerTopicWatts, final String brokerTopicTemperature,
-            final String brokerDataDir, final CCFTimeUnit brokerReconnectTimeout) {
+            final String brokerTopicHistory, final String brokerDataDir, final CCFTimeUnit brokerReconnectTimeout) {
         final ForwarderMQTT forwarderMQTT = new ForwarderMQTT();
         forwarderMQTT.mqttBrokerDefinition = mqttBrokerDefinition;
         forwarderMQTT.brokerTopicWatts = brokerTopicWatts;
         forwarderMQTT.brokerTopicTemperature = brokerTopicTemperature;
+        forwarderMQTT.brokerTopicHistory = brokerTopicHistory;
         forwarderMQTT.brokerDataDir = brokerDataDir;
         forwarderMQTT.brokerReconnectTimeout = brokerReconnectTimeout;
         return forwarderMQTT;
@@ -53,7 +55,7 @@ public class ForwarderMQTT implements IForwarder {
 
     /** The broker topic. */
     @BeanField
-    private String brokerTopicWatts, brokerTopicTemperature;
+    private String brokerTopicWatts, brokerTopicTemperature, brokerTopicHistory;
 
     /** The broker data dir. */
     @BeanField
@@ -79,6 +81,8 @@ public class ForwarderMQTT implements IForwarder {
             return event.enhanceTopicWithInternalValues(brokerTopicTemperature);
         } else if (event instanceof EventWatts) {
             return event.enhanceTopicWithInternalValues(brokerTopicWatts);
+        } else if (event instanceof EventHistory) {
+            return event.enhanceTopicWithInternalValues(brokerTopicHistory);
         } else {
             throw new CCFException("Unknown event type [" + event.getClass().getName() + "]");
         }

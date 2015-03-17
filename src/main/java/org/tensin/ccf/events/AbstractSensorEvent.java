@@ -1,13 +1,12 @@
 package org.tensin.ccf.events;
 
-import org.tensin.ccf.StringHelper;
 import org.tensin.ccf.bean.BeanField;
 import org.tensin.ccf.bean.BeanHelper;
 
 /**
  * The Class AbstractEvent.
  */
-public abstract class AbstractEvent {
+public abstract class AbstractSensorEvent {
 
     /** The timestamp. */
     @BeanField
@@ -17,10 +16,6 @@ public abstract class AbstractEvent {
     @BeanField
     private final String sensor;
 
-    /** The id. */
-    @BeanField
-    private final String id;
-
     /**
      * Instantiates a new abstract event.
      *
@@ -29,23 +24,10 @@ public abstract class AbstractEvent {
      * @param id
      *            the id
      */
-    public AbstractEvent(final String sensor, final String id) {
+    public AbstractSensorEvent(final String sensor) {
         super();
         timestamp = System.currentTimeMillis();
         this.sensor = sensor;
-        this.id = id;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.tensin.ccf.events.IEvent#enhanceTopicWithInternalValues(java.lang.String)
-     */
-    public String enhanceTopicWithInternalValues(final String brokerTopic) {
-        String result = brokerTopic;
-        result = StringHelper.replace(result, "${id}", getId());
-        result = StringHelper.replace(result, "${sensor}", getSensor());
-        return result;
     }
 
     /**
@@ -56,15 +38,6 @@ public abstract class AbstractEvent {
     @Override
     public boolean equals(final Object obj) {
         return BeanHelper.equals(this, obj);
-    }
-
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return id;
     }
 
     /**

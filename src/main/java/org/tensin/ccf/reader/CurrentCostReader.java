@@ -178,7 +178,7 @@ public class CurrentCostReader extends Thread {
      *            the xml
      * @return true, if successful
      */
-    private boolean decodeAsHistMessage(final String xml) {
+    private boolean decodeAndForwardAsHistMessage(final String xml) {
         try {
             final CurrentCostHistoryMessage m = serializer.read(CurrentCostHistoryMessage.class, xml);
             if (m != null) {
@@ -187,8 +187,11 @@ public class CurrentCostReader extends Thread {
                 }
             }
             return true;
+        } catch (CCFException e) {
+            LOGGER.error("Can'forward hist message", e);
+            return false;
         } catch (Exception e) {
-            LOGGER.debug("Can't deserialize xml as hist message [" + xml + "] : " + e.getMessage());
+            LOGGER.error("Can't deserialize xml as hist message [" + xml + "] : " + e.getMessage());
             return false;
         }
     }
@@ -200,7 +203,7 @@ public class CurrentCostReader extends Thread {
      *            the xml
      * @return true, if successful
      */
-    private boolean decodeAsRawMessage(final String xml) {
+    private boolean decodeAndForwardAsRawMessage(final String xml) {
         try {
             final CurrentCostMessage m = serializer.read(CurrentCostMessage.class, xml);
             if (m != null) {
@@ -210,6 +213,9 @@ public class CurrentCostReader extends Thread {
                 }
             }
             return true;
+        } catch (CCFException e) {
+            LOGGER.error("Can'forward raw message", e);
+            return false;
         } catch (Exception e) {
             LOGGER.debug("Can't deserialize xml as raw message [" + xml + "] : " + e.getMessage());
             return false;
@@ -375,10 +381,10 @@ public class CurrentCostReader extends Thread {
             // trying first the most common one (raw values) and if it fails
             // we are trying the history decoding
             // A better way to proceed would be to try to detect what the messages are before deserializing
-            if (!decodeAsRawMessage(xml)) {
-                if (!decodeAsHistMessage(xml)) {
-                    LOGGER.error("Can't decode XML [" + xml + "] (neither raw nor history messages)");
-                }
+            if (xml.contains("<hist>")) {
+                decodeAndForwardAsHistMessage(xml);
+            } else {
+                decodeAndForwardAsRawMessage(xml);
             }
         }
     }

@@ -2,7 +2,7 @@ package org.tensin.ccf.model.history;
 
 public enum CurrentCostHistoryItemType {
 
-    DAY("dayly"), MONTH("monthly"), HOUR("hourly");
+    DAY("daily"), MONTH("monthly"), HOUR("hourly");
 
     private final String topic;
 

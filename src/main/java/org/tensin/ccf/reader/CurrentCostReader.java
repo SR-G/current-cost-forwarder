@@ -147,7 +147,7 @@ public class CurrentCostReader extends Thread {
      *             the CCF exception
      */
     public String detectDevice() throws CCFException {
-        LOGGER.info("Trying to autodect mirror4j device in [" + Constants.DEFAULT_DEVICE_PATH + "] with pattern [" + Constants.DEFAULT_DEVICE_PATTERN + "]");
+        LOGGER.info("Trying to autodect EnviR device in [" + Constants.DEFAULT_DEVICE_PATH + "] with pattern [" + Constants.DEFAULT_DEVICE_PATTERN + "]");
         final IOFileFilter nameFilter = new RegexFileFilter(Constants.DEFAULT_DEVICE_PATTERN);
         final Collection<File> items = FileUtils.listFiles(new File(Constants.DEFAULT_DEVICE_PATH), nameFilter, TrueFileFilter.TRUE);
 

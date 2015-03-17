@@ -26,10 +26,10 @@ public class DestTopicNameTestCase extends AbstractReaderTestCase {
             final CurrentCostMessage m = buildSerializer().read(CurrentCostMessage.class, new File("src/test/java/org/tensin/ccf/model/message-raw.xml"));
             final AbstractCurrentCostChannel channel = m.getChannels().iterator().next();
             final EventWatts w = new EventWatts(m.getSensor(), m.getId(), channel.getChannel(), channel.getWatts());
-            Assert.assertEquals("/metrics/current-cost/0/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${sensor}/watts"));
-            Assert.assertEquals("/metrics/current-cost/ch1/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${channel}/watts"));
-            Assert.assertEquals("/metrics/current-cost/00077/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${id}/watts"));
-            Assert.assertEquals("/metrics/current-cost/00077/ch1/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${id}/${channel}/watts"));
+            Assert.assertEquals("metrics/current-cost/0/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${sensor}/watts"));
+            Assert.assertEquals("metrics/current-cost/ch1/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${channel}/watts"));
+            Assert.assertEquals("metrics/current-cost/00077/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${id}/watts"));
+            Assert.assertEquals("metrics/current-cost/00077/ch1/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${id}/${channel}/watts"));
         } catch (Exception e) {
             throw new CCFException(e);
         }
@@ -49,12 +49,12 @@ public class DestTopicNameTestCase extends AbstractReaderTestCase {
             int i = 1;
             for (final AbstractCurrentCostChannel channel : m.getChannels()) {
                 final EventWatts w = new EventWatts(m.getSensor(), m.getId(), channel.getChannel(), channel.getWatts());
-                Assert.assertEquals("/metrics/current-cost/0/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${sensor}/watts"));
-                Assert.assertEquals("/metrics/current-cost/00077/watts", w.enhanceTopicWithInternalValues("/metrics/current-cost/${id}/watts"));
+                Assert.assertEquals("metrics/current-cost/0/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${sensor}/watts"));
+                Assert.assertEquals("metrics/current-cost/00077/watts", w.enhanceTopicWithInternalValues("metrics/current-cost/${id}/watts"));
 
-                final String topic = w.enhanceTopicWithInternalValues("/metrics/current-cost/${id}/${channel}/watts");
+                final String topic = w.enhanceTopicWithInternalValues("metrics/current-cost/${id}/${channel}/watts");
                 System.out.println(topic);
-                Assert.assertEquals("/metrics/current-cost/00077/ch" + i++ + "/watts", topic);
+                Assert.assertEquals("metrics/current-cost/00077/ch" + i++ + "/watts", topic);
             }
         } catch (Exception e) {
             throw new CCFException(e);

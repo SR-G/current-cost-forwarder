@@ -12,16 +12,16 @@ This allows to have :
 
 There are right now two ouput topics, one for temperature and one for watts. Base topic names are customizable. By default you'll have :
 
-- /metrics/current-cost/watts
-- /metrics/current-cost/temperature
+- metrics/current-cost/watts
+- metrics/current-cost/temperature
 
 You can customize the base topic with the ```--broker-topic``` additionnal parameter and use, if you are using multiple IAMs, the ```${id}``` and/or ```${sensor}``` and/or ```${channel}```tokens to adjust the output topic name. 
 You may customize more accurately topics with ```--broker-topic-watts``` and ```--broker-topic-temperature``` (those parameters will override the base ```--broker-topic```).
 iIn your shell / command line, you have to enclose the topic name with single quotes and not double quotes (otherwise the tokens will be interpreted as shell variables and thus replaced by blank by the shell itself).
 
-<pre>current-cost-forwarder.sh --broker-topic '/metrics/current-cost/${id}' // will publish on /metrics/current-cost/000123/watts and /metrics/current-cost/000123/temperature
-current-cost-forwarder.sh --broker-topic-watts '/metrics/current-cost/energy' --broker-topic-temperature '/metrics/current-cost/temp' // will publish on the exact given topics exactly like they are provided as parameters
-current-cost-forwarder.sh --broker-topic-watts '/metrics/current-cost/${channel}/energy' --broker-topic-temperature '/metrics/current-cost/temp' // will split watts under separated channels (thus 1 message from the device will produce 1 temp metric + 1 watts metric per channel) 
+<pre>current-cost-forwarder.sh --broker-topic 'metrics/current-cost/${id}' // will publish on metrics/current-cost/000123/watts and metrics/current-cost/000123/temperature
+current-cost-forwarder.sh --broker-topic-watts 'metrics/current-cost/energy' --broker-topic-temperature 'metrics/current-cost/temp' // will publish on the exact given topics exactly like they are provided as parameters
+current-cost-forwarder.sh --broker-topic-watts 'metrics/current-cost/${channel}/energy' --broker-topic-temperature 'metrics/current-cost/temp' // will split watts under separated channels (thus 1 message from the device will produce 1 temp metric + 1 watts metric per channel) 
 </pre>
 
 ## Current Cost EnviR device
@@ -105,21 +105,22 @@ Options are :
 
 <pre>Usage: <main class> [options]
   Options:
-    --broker-auth                    Is the broker auth (true|false). Default: false
-    --broker-data-dir                The MQTT broker data dir (for lock files). Default: /var/tmp/
-    --broker-password                The MQTT broker password (if authed)
-    --broker-reconnect-timeout       The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso. Default: 5000ms
-    --broker-topic                   The base broker topic to publish on. /watts and /temperature will be added. Default: /metrics/current-cost/
-    --broker-topic-temperature       The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.
-    --broker-topic-watts             The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.
-  * --broker-url                     The MQTT broker URL to publish on
-    --broker-username                The MQTT broker username (if authed)
-    --debug                          Debug mode. Default: false
-    --device, -d                     Device name to use, e.g., /dev/ttyUSB0. If not provided, the first /dev/ttyUSB* will be used
-    --device-reconnect-timeout       When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. Example values : '2s', '500ms', aso. Default: 2000ms
-    --pid                            The PID filename. Default is current directory, file current-cost-forwarder.pid. Default: current-cost-forwarder.pid
-    --timeout                        Start/stop timeout. Example values : '30s', '1m', '500ms', aso. Default: 60000ms
-    -h, --usage, --help              Shows available commands. Default: true
+    --activate-console-forwarder       Activate an additionnal console forwarder : everything that will be published on MQTT topics will too be sent to the console (for debug purposes). Default: false
+    --broker-auth                      Is the broker auth (true|false). Default: false
+    --broker-data-dir                  The MQTT broker data dir (for lock files). Default: /var/tmp/
+    --broker-password                  The MQTT broker password (if authed)
+    --broker-reconnect-timeout         The timeout between each reconnect on the broker. Example values : '30s', '1m', '500ms', aso. Default: 5000ms
+    --broker-topic                     The base broker topic to publish on. /watts and /temperature will be added. Default: metrics/current-cost/
+    --broker-topic-temperature         The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.
+    --broker-topic-watts               The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.
+  * --broker-url                       The MQTT broker URL to publish on
+    --broker-username                  The MQTT broker username (if authed)
+    --debug                            Debug mode. 0 = no log, 1 (default) = INFO, 2 = DEBUG, 3 = TRACE. Default: 1
+    --device, -d                       Device name to use, e.g., /dev/ttyUSB0. If not provided, the first /dev/ttyUSB* will be used
+    --device-reconnect-timeout         When expected device is not found (or was found previously but not anymore), we'll wait this timeout before trying to reconnect. Example values : '2s', '500ms', aso. Default: 2000ms
+    --pid                              The PID filename. Default is current directory, file current-cost-forwarder.pid. Default: current-cost-forwarder.pid
+    --timeout                          Start/stop timeout. Example values : '30s', '1m', '500ms', aso. Default: 60000ms
+    -h, --usage, --help                Shows available commands. Default: true
 </pre>
 
 By default the program will try to read something like /dev/ttyUSB0 or /dev/ttyUSB1, aso (the first one will be used). You have to change the device name (through the --device parameter) if you have several USB devices.
@@ -148,7 +149,7 @@ monit restart current-cost
 
 You can use the mosquitto client to subscribe anywhere (ie, from any computer) to any topic.
 
-<pre>mosquito_sub -h 192.168.8.40 -t /metrics/current-cost/watts
+<pre>mosquito_sub -h 192.168.8.40 -t metrics/current-cost/watts
 </pre>
 
 ## How to build (from sources)
@@ -202,8 +203,8 @@ mqtt:mqtt-broker-home.pwd=PASSWORD
 
 #### Items configuration
 
-<pre>Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:/metrics/current-cost/watts:state:default]"} 
-Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:/metrics/current-cost/temperature:state:default]"}
+<pre>Number CurrentCostWatts {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/watts:state:default]"} 
+Number CurrentCostTemperature {mqtt="&lt;[mqtt-broker-home:metrics/current-cost/temperature:state:default]"}
 </pre>
 
 This will declare two variables on your MQTT broker that will be constantly filled with the values published in these two topics. 
@@ -309,13 +310,13 @@ The main "event" logs are "reduced" once the program is started, in order to not
 21:52:29.903 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Writing retrieved PID [22995] in PID file [/home/applications/currentcost/current-cost-forwarder.pid]
 21:52:29.947 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting CurrentCostForwarder
 21:52:29.992 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - Now starting reader
-21:52:29.993 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect mirror4j device in [/dev/] with pattern [ttyUSB.*]
+21:52:29.993 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Trying to autodect EnviR device in [/dev/] with pattern [ttyUSB.*]
 21:52:30.056 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Auto-detected current cost device [/dev/ttyUSB0]
 21:52:30.128 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.reader.CurrentCostReader - Starting CurrentCostForwarder reader thread on device [/dev/ttyUSB0]
 21:52:30.142 [THREAD-CURRENT-COST-FORWARDER-READER] INFO  org.tensin.ccf.reader.CurrentCostReader - Now connected on specified device [/dev/ttyUSB0]
 21:52:30.304 [THREAD-CURRENT-COST-FORWARDER-MAIN] INFO  org.tensin.ccf.CurrentCostForwarder - CurrentCostForwarder started in [357ms]
 21:52:30.334 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.ForwarderMQTT - Starting MQTT forwarder with topic base name [metrics/current-cost], mqtt broker MQTTBrokerDefinition : broker-auth [false], broker-url [tcp://192.168.8.40:1883]
-21:52:30.372 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425415950369], reconnections each [5s], without authentification
+21:52:30.372 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Now starting MQTT client on broker url [tcp://192.168.8.40:1883], client ID is [root.1425415950369], reconnecting each [5s], without authentification
 21:52:30.374 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection not done on MQTT broker, will now try to connect
 21:52:30.377 [THREAD-CURRENT-COST-FORWARDER-FORWARDERS] INFO  org.tensin.ccf.forwarder.ForwarderService - Activated forwarders are [MQTT]
 21:52:30.528 [THREAD-CURRENT-COST-FORWARDER-MQTT-RECONNECT] INFO  org.tensin.ccf.forwarder.mqtt.MQTTReconnectClient - Connection done on MQTT Broker

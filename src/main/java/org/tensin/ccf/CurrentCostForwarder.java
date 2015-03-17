@@ -92,14 +92,14 @@ public class CurrentCostForwarder {
 
     /** The broker topic. */
     @Parameter(names = { "--broker-topic" }, description = "The base broker topic to publish on. /watts and /temperature will be added", required = false)
-    private String brokerTopic = "/metrics/current-cost/";
+    private String brokerTopic = "metrics/current-cost/";
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-watts" }, description = "The broker topic to publish on for watts. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/watts. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
     private String brokerTopicWatts;
 
     /** The broker topic. */
-    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : /metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
+    @Parameter(names = { "--broker-topic-temperature" }, description = "The broker topic to publish on for temperature. Overrides base broker topic from --broker-topic. Example : metrics/current-cost/${sensor}/temperature. ${sensor}, ${id} and ${channel} tokens are optionals.", required = false)
     private String brokerTopicTemperature;
 
     /** The broker url. */
@@ -159,7 +159,7 @@ public class CurrentCostForwarder {
         mqttBrokerDefinition.setBrokerUsername(getBrokerUsername());
 
         forwarders
-        .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
+                .add(ForwarderMQTT.build(mqttBrokerDefinition, buildBrokerTopicWatts(), buildBrokerTopicTemperature(), brokerDataDir, brokerReconnectTimeout));
         forwarderService = ForwarderService.build(forwarders);
     }
 

@@ -223,14 +223,14 @@ public class MQTTReconnectClient {
             final String hiddenPassword = StringUtils.repeat("*", mqttBrokerDefinition.getBrokerPassword() == null ? 0 : mqttBrokerDefinition
                     .getBrokerPassword().length());
             sb.append(", connection will be authentificated with username [").append(mqttBrokerDefinition.getBrokerUsername()).append("], password [")
-                    .append(hiddenPassword).append("]");
+            .append(hiddenPassword).append("]");
             options.setUserName(mqttBrokerDefinition.getBrokerUsername());
             options.setPassword(mqttBrokerDefinition.getBrokerPassword().toCharArray());
         } else {
             sb.append(", without authentification");
         }
         LOGGER.info("Now starting MQTT client on broker url [" + mqttBrokerDefinition.getBrokerUrl() + "], client ID is [" + clientId
-                + "], reconnections each [" + reconnectTimeout.format() + "]" + sb.toString());
+                + "], reconnecting each [" + reconnectTimeout.format() + "]" + sb.toString());
         reconnectThread = new Thread() {
 
             /**

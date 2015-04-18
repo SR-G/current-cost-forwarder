@@ -1,5 +1,6 @@
 // === Imports
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'ssh'
 apply plugin: 'eclipse'
 apply plugin: "sonar-runner"

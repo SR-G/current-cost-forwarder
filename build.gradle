@@ -7,7 +7,8 @@ apply plugin: "sonar-runner"
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
+        maven { url "https://repo.eclipse.org/content/repositories/paho-releases/" }
+		// maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
 	}
 	dependencies {
 		classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
@@ -24,7 +25,7 @@ version = '1.0.1-SNAPSHOT'
 // === Repositories
 repositories {
 	mavenCentral()
-	maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
+	// maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
 }
 
 
@@ -70,7 +71,8 @@ dependencies {
     compile 'org.reflections:reflections:0.9.8'
     compile 'com.google.guava:guava:17.0'
 
-    compile 'org.eclipse.paho:mqtt-client:0.4.0'
+    // compile 'org.eclipse.paho:mqtt-client:0.4.0'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
     
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
@@ -119,7 +121,7 @@ tasks["eclipse"].dependsOn(eclipseSettings)
 
 // === SSH - http://gradle-ssh-plugin.github.io/
 ssh {
-	identity = file('c:/Profiles/u248663/.ssh/id_rsa')
+	// identity = file('c:/Profiles/u248663/.ssh/id_rsa')
 	knownHosts = allowAnyHosts    // Disable host key verification
 }
 

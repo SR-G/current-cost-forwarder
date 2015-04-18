@@ -7,7 +7,6 @@ apply plugin: "sonar-runner"
 buildscript {
 	repositories {
 		mavenCentral()
-        maven { url "https://repo.eclipse.org/content/repositories/paho-releases/" }
 		// maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
 	}
 	dependencies {
@@ -25,6 +24,7 @@ version = '1.0.1-SNAPSHOT'
 // === Repositories
 repositories {
 	mavenCentral()
+    maven { url "https://repo.eclipse.org/content/repositories/paho-releases/" }
 	// maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
 }
 

@@ -14,12 +14,18 @@ import org.tensin.ccf.model.AbstractCurrentCost;
 @Root(strict = true)
 public class CurrentCostHistoryData extends AbstractCurrentCost {
 
-    /** The type. */
+    /** The historic Appliance Number */
     @BeanField
     @Element
     private String sensor;
 
-    /** The items. */
+    /**
+     * The values
+     * h="hours", 24="22 to 24 hrs ago"
+     * h="hours", 22="20 to 22 hrs ago"
+     * h="hours", 18="20 to 20 hrs ago"
+     * h="hours", 22="16 to 18 hrs ago"
+     */
     @BeanField
     private Collection<ICurrentCostHistoryItem> items = new ArrayList<ICurrentCostHistoryItem>();
 

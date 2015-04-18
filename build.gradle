@@ -2,11 +2,12 @@
 apply plugin: 'java'
 apply plugin: 'ssh'
 apply plugin: 'eclipse'
+apply plugin: "sonar-runner"
 
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
+		maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
 	}
 	dependencies {
 		classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
@@ -23,7 +24,18 @@ version = '1.0.1-SNAPSHOT'
 // === Repositories
 repositories {
 	mavenCentral()
-	maven { url "c:/Program Files/eclipse_DEV/integration/maven/repository/" }
+	maven { url "c:/Program%20Files/eclipse_DEV/integration/maven/repository/" }
+}
+
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://tensin.org:9005"
+        property "sonar.jdbc.url", "jdbc:mysql://tensin.org/sonar"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "a31db8"
+    }
 }
 
 jar {

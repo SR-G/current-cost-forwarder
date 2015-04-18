@@ -16,22 +16,22 @@ import org.tensin.ccf.model.AbstractCurrentCostMessage;
 @Root(name = "msg")
 public class CurrentCostMessage extends AbstractCurrentCostMessage {
 
-    /** The temperature. */
+    /** The temperature, temperature as displayed */
     @Element(required = false, name = "tmpr")
     @BeanField
     private double temperature;
 
-    /** The sensor. */
+    /** The sensor, Appliance Number as displayed. */
     @Element(required = false, name = "sensor")
     @BeanField
     private String sensor;
 
-    /** The id. */
+    /** The id = radio ID received from the sensor */
     @Element(required = false, name = "id")
     @BeanField
     private String id;
 
-    /** The type. */
+    /** The sensor Type, "1" = electricity */
     @Element(required = false, name = "type")
     @BeanField
     private int type;

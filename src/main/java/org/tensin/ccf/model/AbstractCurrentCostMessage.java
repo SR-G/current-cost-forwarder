@@ -9,17 +9,17 @@ import org.tensin.ccf.bean.BeanHelper;
  */
 public abstract class AbstractCurrentCostMessage extends AbstractCurrentCost {
 
-    /** The source. */
+    /** The source and software version, ex. CC128-v0.11 */
     @Element(required = false, name = "src")
     @BeanField
     private String source;
 
-    /** The dsb. */
+    /** The dsb, days since birth, ie days run */
     @Element(required = false, name = "dsb")
     @BeanField
     private String dsb;
 
-    /** The time. */
+    /** The time, 24 hour clock time as displayed. */
     @Element(required = false, name = "time")
     @BeanField
     private String time;

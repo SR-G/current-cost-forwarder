@@ -15,17 +15,17 @@ import org.tensin.ccf.model.AbstractCurrentCost;
 @Root(name = "hist", strict = true)
 public class CurrentCostHistoryEntry extends AbstractCurrentCost {
 
-    /** The type. */
+    /** The days since wipe of history */
     @Element(required = false, name = "dsw")
     @BeanField
     private String dsw;
 
-    /** The type. */
+    /** The sensor Type, "1" = electricity */
     @Element(required = false, name = "type")
     @BeanField
     private int type;
 
-    /** The type. */
+    /** The units of data eg KWHr */
     @Element(required = false, name = "units")
     @BeanField
     private String units;

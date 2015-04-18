@@ -14,7 +14,7 @@ public abstract class AbstractCurrentCostChannel extends AbstractCurrentCost {
     @BeanField
     private int watts;
 
-    /** The channel. */
+    /** The channel = sensor channel */
     @BeanField
     private String channel;
 

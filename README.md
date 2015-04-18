@@ -86,6 +86,8 @@ Raw messages read from the USB device looks like :
 </msg>
 ```
 
+Official specification referenced here : http://www.currentcost.com/cc128/xml.htm
+
 ## How to run (from release)
 
 ### Distribution

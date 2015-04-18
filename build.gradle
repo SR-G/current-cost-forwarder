@@ -31,6 +31,7 @@ repositories {
 
 sonarRunner {
     sonarProperties {
+        property "sonar.projectKey", "current-cost-forwarder"
         property "sonar.host.url", "http://tensin.org:9005"
         property "sonar.jdbc.url", "jdbc:mysql://tensin.org/sonar"
         property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"

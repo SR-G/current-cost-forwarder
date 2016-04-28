@@ -168,7 +168,7 @@ monit restart current-cost
 
 You can use the mosquitto client to subscribe anywhere (ie, from any computer) to any topic.
 
-<pre>mosquito_sub -h 192.168.8.40 -t metrics/current-cost/watts
+<pre>mosquitto_sub -h 192.168.8.40 -t metrics/current-cost/watts
 </pre>
 
 ## How to build (from sources)

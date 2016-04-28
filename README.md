@@ -88,6 +88,21 @@ Raw messages read from the USB device looks like :
 
 Official specification referenced here : http://www.currentcost.com/cc128/xml.htm
 
+If read characters are garbage, you may need to run :
+
+```
+stty -F /dev/ttyUSB0 57600 cs8 -cstopb -parenb -icanon min 1 time 1
+```
+
+To check if everything is working on system-side :
+
+```
+while true; do
+  cat -v < /dev/ttyUSB0
+done
+
+```
+
 ## How to run (from release)
 
 ### Distribution
